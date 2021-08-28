@@ -10,21 +10,22 @@ class SharedRepository {
 	 * Gets one
 	 * @param {object} search
 	 */
-	getOne(where, order, fields = '*') {
-		let sql = `SELECT ${fields} from ${this.table}`;
-		const params = [];
+	getOne(where, fields = ['*']) {
+		let sql = `SELECT ${fields.join(', ')} from ${this.table} `;
+		let params = [];
 
 		if (where) {
-			sql += where.fields;
-			params.push(where.values);
+			const fields = Object.keys(where)
+				.map((f) => `${f} = ?`)
+				.join(' AND ');
+			sql += `WHERE ${fields}`;
+			params = Object.values(where);
 		}
 
-		if (order) {
-			sql += ' ORDER BY ?';
-			params.push(order);
-		}
-
-		return db.execute(sql, params);
+		return db
+			.execute(sql, params)
+			.then((data) => new Promise((resolve) => resolve(data[0])))
+			.catch((err) => new Promise((reject) => reject(err)));
 	}
 
 	getById(id, fields = '*') {

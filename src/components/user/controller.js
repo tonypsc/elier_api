@@ -13,11 +13,11 @@ const userController = {
 	 */
 	async login(req, res) {
 		try {
-			const result = await service.login(req.body.username, req.body.pwd);
+			const { username, pwd } = req.body;
+			const result = await service.login(username, pwd);
 
 			result['token'] = jwt.generateToken({
 				userId: result['data']._id,
-				enterpriseId: result['data'].enterpriseId,
 				rol: result['data'].rol,
 			});
 

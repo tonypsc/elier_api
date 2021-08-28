@@ -3,98 +3,51 @@ const constants = require('../../constants');
 const crypto = require('crypto');
 const SharedRepository = require('../shared/SharedRepository');
 // const mailer = require('../services/mailer');
-const model = require('./model');
 
 const uiFields = [
-	'_id',
+	'user_id',
 	'userName',
 	'fullName',
 	'email',
 	'photo',
-	'enterpriseId',
-	'enterpriseName',
-	'rol',
 	'status',
-	'createdAt',
+	'rol_id',
+	'theme',
+	'logged_in',
+	'language',
 ];
 
-const repository = new SharedRepository(model);
-const enterpriseRepository = null;
+const repository = new SharedRepository('user', 'user_id');
 
 const userService = {
 	async login(userName, password) {
-		const user = await repository.getOne({ userName: userName }, [
-			...uiFields,
-			'password',
-		]);
-		const saUser = await repository.getOne({ rol: 'sa' });
+		const user = await repository.getOne({ username: userName });
 
-		// If sa does not exists, create it
-		if (!saUser) {
-			const salt = bcrypt.genSaltSync(10);
-			const hashedPwd = bcrypt.hashSync('2bornot2b', salt);
-
-			const saUser = {
-				userName: 'sa',
-				fullName: 'system administrator',
-				email: 'tonyps@gmail.com',
-				password: hashedPwd,
-				rol: 'sa',
-			};
-
-			await repository.insert(saUser);
-
-			delete user.password;
-			return { status: 'success', data: saUser };
-		}
-
-		// User exists
+		// user does not exists
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Usuario no encontrado.',
+				message: 'User not found.',
 			};
 
-		// User is active
+		// user is inactive
 		if (user.status !== 1)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Usuario inactivo.' };
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'User account disabled.',
+			};
 
-		if (user.rol !== 'sa') {
-			const enterprise = await enterpriseRepository.getById(user.enterpriseId);
-
-			// User enterprise deleted
-			if (enterprise?.deleted)
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: 'Empresa eliminada.',
-				};
-
-			// User enterprise inactive
-			if (enterprise?.status !== 1)
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: 'Empresa inactiva.',
-				};
-
-			// User enterprise licence expired
-			if (enterprise?.expireDate < Date.now())
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: 'La licencia ha expirado.',
-				};
-		}
-
-		// Using sa password can login any user
+		// check password
 		if (
-			!bcrypt.compareSync(password, user.password) &&
-			!bcrypt.compareSync(password, saUser.password)
+			!bcrypt.compareSync(password, user.pass)
+			// &&	!bcrypt.compareSync(password, saUser.password)
 		)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Credenciales incorrectas.',
+				message: 'Wrong credentials.',
 			};
 
-		// Success login
+		// success login
 		delete user.password;
 		return { status: 'success', data: user };
 	},
