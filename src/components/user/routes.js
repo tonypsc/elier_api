@@ -9,7 +9,7 @@ router.get('/recoverpwd/:id', controller.verifyLink);
 router.post('/setpwd', controller.resetPassword);
 router.post('/newpwd', controller.setPassword);
 router.post('/changepwd', controller.changePassword);
-router.post('/', controller.add);
+router.post('/register', controller.register);
 router.get('/', controller.get);
 router.get('/:id', controller.getOne);
 router.patch('/', controller.update);

@@ -9,7 +9,13 @@ module.exports = {
 	},
 
 	authenticateToken(req, res, next) {
-		const excludedPaths = ['/login', '/recoverpwd', '/setpwd', '/uploads'];
+		const excludedPaths = [
+			'/login',
+			'/recoverpwd',
+			'/setpwd',
+			'/uploads',
+			'/register',
+		];
 
 		for (const path of excludedPaths) {
 			if (req.path.includes(path)) {

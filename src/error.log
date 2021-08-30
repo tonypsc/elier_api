@@ -100,3 +100,159 @@ Cannot read property '0' of undefined
 Cannot read property '0' of undefined
 						
 ==========================================
+2021-8
+						-30 9
+						:21:58
+crypto.randomUUID is not a function
+						
+==========================================
+2021-8
+						-30 9
+						:34:36
+toString() radix argument must be between 2 and 36
+						
+==========================================
+2021-8
+						-30 9
+						:44:35
+Date(...).getTime is not a function
+						
+==========================================
+2021-8
+						-30 9
+						:52:30
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 9
+						:53:27
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 9
+						:54:22
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 9
+						:55:50
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 9
+						:56:12
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 9
+						:56:39
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 10
+						:1:29
+Duplicate entry 'pepe' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 10
+						:1:45
+Duplicate entry 'dere@ddd.com' for key 'UNIQUE_EMAIL'
+						
+==========================================
+2021-8
+						-30 10
+						:3:25
+Duplicate entry 'pepe22' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 10
+						:7:57
+Duplicate entry 'pepe224' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 10
+						:10:3
+Duplicate entry 'pepe224' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 10
+						:29:38
+Cannot read property 'rol_id' of undefined
+						
+==========================================
+2021-8
+						-30 10
+						:30:32
+Cannot read property 'rol_id' of undefined
+						
+==========================================
+2021-8
+						-30 10
+						:30:52
+Cannot read property 'rol_id' of undefined
+						
+==========================================
+2021-8
+						-30 10
+						:31:34
+Cannot read property 'rol_id' of undefined
+						
+==========================================
+2021-8
+						-30 11
+						:6:29
+Duplicate entry 'pepe-photo1' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-8
+						-30 11
+						:24:29
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'from user' at line 1
+						
+==========================================
+2021-8
+						-30 11
+						:26:57
+Undeclared variable: NaN
+						
+==========================================
+2021-8
+						-30 11
+						:28:5
+Undeclared variable: NaN
+						
+==========================================
+2021-8
+						-30 11
+						:30:26
+Undeclared variable: NaN
+						
+==========================================
+2021-8
+						-30 11
+						:31:7
+Undeclared variable: NaN
+						
+==========================================
+2021-8
+						-30 11
+						:31:29
+Undeclared variable: NaN
+						
+==========================================
+2021-8
+						-30 11
+						:35:36
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ORDER BY ?' at line 2
+						
+==========================================

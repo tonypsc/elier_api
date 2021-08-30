@@ -23,25 +23,25 @@ const pool = connection();
 
 module.exports = {
 	query: async (...params) => {
-		try {
-			const connection = await pool.getConnection();
-			const [data, e] = await connection.query(...params);
-			await connection.release();
-			return data;
-		} catch (e) {
-			console.log(e);
-		}
+		// try {
+		const connection = await pool.getConnection();
+		const [data, e] = await connection.query(...params);
+		await connection.release();
+		return data;
+		// } catch (e) {
+		// 	console.log(e);
+		// }
 	},
 
 	execute: async (...params) => {
-		try {
-			const connection = await pool.getConnection();
-			const [data, col] = await connection.execute(...params);
-			await connection.release();
-			return data;
-		} catch (e) {
-			console.log(e);
-		}
+		//try {
+		const connection = await pool.getConnection();
+		const [data, col] = await connection.execute(...params);
+		await connection.release();
+		return data;
+		// } catch (e) {
+		// 	console.log(e);
+		// }
 	},
 
 	pool,

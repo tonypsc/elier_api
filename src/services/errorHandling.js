@@ -1,5 +1,4 @@
-const DUPLICATE = 11000; //Duplicate index
-const DUPLICATE_MESSAGE = 'This information can create duplicate values.';
+const DUPLICATE_MESSAGE = 'The data entered would create duplicate values.';
 const UNHANDLE_MESSAGE = 'Errors ocurred processing the request.';
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +10,7 @@ const errorHandling = {
 		let errorMessage = '';
 
 		// mysql error
-		if (err.name === 'MysqlError') {
+		if (err.type === 'mysql') {
 		} else if (err.code === constants.CUSTOM_ERROR_CODE) {
 			// custom errors
 			errorMessage = err.message;

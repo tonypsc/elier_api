@@ -6,22 +6,20 @@ const formidable = require('formidable');
 const path = require('path');
 const fileHelper = require('../../utils/fileHelper');
 const fs = require('fs');
+const { resolve } = require('path');
 
 const userController = {
-	/**
-	 * process login request and returns token or errors
-	 */
 	async login(req, res) {
 		try {
 			const { username, pwd } = req.body;
 			const result = await service.login(username, pwd);
 
-			result['token'] = jwt.generateToken({
-				userId: result['data']._id,
-				rol: result['data'].rol,
+			const token = jwt.generateToken({
+				user_id: result.user_id,
+				rol_id: result.rol_id,
 			});
 
-			res.json(result);
+			res.json({ status: 'success', user: result, token });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
 			res.status(400);
@@ -88,37 +86,21 @@ const userController = {
 		}
 	},
 
-	async add(req, res) {
+	async register(req, res) {
 		try {
-			// Only admins and sa can create users
-			if (req.user?.rol !== 'admin' && req.user?.rol !== 'sa')
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: constants.ACCESS_DENIED_MSG,
-				};
-
 			const form = new formidable.IncomingForm();
 			//form.maxFileSize = 200 * 1024 * 1024;
 
-			const {
-				userName,
-				fullName,
-				password,
-				confirm,
-				email,
-				photo,
-				rol,
-				enterpriseId,
-				enterpriseName,
-			} = await new Promise((resolve, reject) => {
-				form.parse(req, async function (err, fields, files) {
-					if (err) {
-						reject(err);
-						return;
-					}
-					resolve({ ...fields, photo: files.photo });
+			const { username, fullname, password, confirm, email, photo, rol_id } =
+				await new Promise((resolve, reject) => {
+					form.parse(req, async function (err, fields, files) {
+						if (err) {
+							reject(err);
+							return;
+						}
+						resolve({ ...fields, photo: files.photo });
+					});
 				});
-			});
 
 			let uniqueFileName = null;
 
@@ -132,16 +114,15 @@ const userController = {
 			}
 
 			const result = await service.insert(
-				userName,
-				fullName,
+				username,
+				fullname,
 				password,
 				confirm,
 				email,
 				uniqueFileName,
-				rol,
-				enterpriseId,
-				enterpriseName
+				rol_id
 			);
+
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -152,13 +133,8 @@ const userController = {
 
 	async get(req, res) {
 		try {
-			const items = await service.get(
-				req.user.userId,
-				req.user?.enterpriseId,
-				req.query.search,
-				req.query.page,
-				req.query.limit
-			);
+			const { search, page, limit } = req.query;
+			const items = await service.get(search, page, limit);
 			res.json({ status: 'success', data: items });
 		} catch (error) {
 			const errors = errorHandling.processError(error);

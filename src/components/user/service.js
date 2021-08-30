@@ -3,6 +3,7 @@ const constants = require('../../constants');
 const crypto = require('crypto');
 const SharedRepository = require('../shared/SharedRepository');
 // const mailer = require('../services/mailer');
+const dto = require('./dto');
 
 const uiFields = [
 	'user_id',
@@ -20,6 +21,12 @@ const uiFields = [
 const repository = new SharedRepository('user', 'user_id');
 
 const userService = {
+	/**
+	 * Checks if user exists, is active and has proper credentials
+	 * @param {*} userName
+	 * @param {*} password
+	 * @returns {object} user data
+	 */
 	async login(userName, password) {
 		const user = await repository.getOne({ username: userName });
 
@@ -48,17 +55,17 @@ const userService = {
 			};
 
 		// success login
-		delete user.password;
-		return { status: 'success', data: user };
+		return dto.single(user);
 	},
 
 	async recover(emailAddress) {
 		//Check email exists
 		const user = await repository.getOne({ email: emailAddress });
+
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Dirección de correo incorrecta.',
+				message: 'Wrong email address.',
 			};
 
 		// Create recover link
@@ -82,7 +89,7 @@ const userService = {
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Enlace incorrecto.',
+				message: 'Wrong link.',
 			};
 
 		// Verify link is active (24h)
@@ -92,7 +99,7 @@ const userService = {
 		if (hours > 24)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'El enlace ha expirado.',
+				message: 'Link expired.',
 			};
 
 		return user;
@@ -100,30 +107,26 @@ const userService = {
 
 	async resetPwd(link, password, confirm) {
 		if (!link)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Enlace incorrecto' };
+			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Wrong link' };
 
 		// Check link
 		const user = await this.verifyLink(link);
 		return this.setPwd(user, password, confirm);
 	},
 
-	async changePwd(_id, oldPwd, newPwd, confirm) {
-		console.log({ _id });
-
+	async changePwd(user_id, oldPwd, newPwd, confirm) {
 		// Verify old password
-		const user = await repository.getOne({ _id: _id });
-
-		console.log({ user, oldPwd });
+		const user = await repository.getOne({ user_id: user_id });
 
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Usuario incorrecto.',
+				message: 'Wrong user.',
 			};
 		if (!bcrypt.compareSync(oldPwd, user.password))
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Contraseña anterior incorrecta.',
+				message: 'Wrong current password.',
 			};
 
 		return this.setPwd(user, newPwd, confirm);
@@ -132,8 +135,8 @@ const userService = {
 	/**
 	 * Admin set password for user
 	 */
-	async newPwd(_id, password, confirm) {
-		const user = await this.getById(_id);
+	async newPwd(user_id, password, confirm) {
+		const user = await this.getById(user_id);
 		return this.setPwd(user, password, confirm);
 	},
 
@@ -141,12 +144,12 @@ const userService = {
 		if (!password)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Contraseña incorrecta',
+				message: 'Wrong password',
 			};
 		if (password !== confirm)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'La contraseña y la confirmación no son iguales.',
+				message: 'New password and confirmation don`t match',
 			};
 
 		// Crypt pwd
@@ -155,73 +158,65 @@ const userService = {
 		const newUser = { ...user, password: hashedPwd };
 
 		// Update user
-		return repository.update(user._id, newUser);
+		return repository.update(user.user_id, newUser);
 	},
 
-	async insert(
-		userName,
-		fullName,
-		password,
-		confirm,
-		email,
-		photo,
-		rol = 'user',
-		enterpriseId,
-		enterpriseName
-	) {
+	/**
+	 * Inserts the user object in user table
+	 * @param {string} username
+	 * @param {string} fullname
+	 * @param {string} password
+	 * @param {string} password the confirmation of password
+	 * @param {string} email
+	 * @param {string[]} photo
+	 * @param {string} rol_id
+	 * @returns {promise} with the inserted object
+	 */
+	async insert(username, fullname, password, confirm, email, photo, rol_id) {
 		if (password != confirm)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Las contraseñas deben ser iguales.',
-			};
-		if (rol !== 'sa' && !enterpriseId)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Es obligatorio seleccionar la empresa.',
+				message: 'Passwords do not match',
 			};
 
 		const salt = bcrypt.genSaltSync(10);
 		const hashedPwd = bcrypt.hashSync(password, salt);
+		const user_id = repository.getUUID();
 
 		const user = {
-			userName,
-			fullName,
-			password: hashedPwd,
-			photo,
+			user_id,
+			username,
+			fullname,
+			pass: hashedPwd,
 			email,
-			rol,
-			enterpriseId,
-			enterpriseName,
+			photo,
+			rol_id,
+			created_on: new Date().getTime(),
 		};
 
-		return await repository.insert(user);
-		//return repository.getOne({userName: userName}, uiFields);
+		await repository.insert(user);
+		return repository.getById(user_id, uiFields);
 	},
 
-	async get(userId, enterpriseId = null, search, page, limit) {
+	async get(search, page, limit) {
 		page = page < 0 ? 0 : page - 1;
-		let fullSearch = { _id: { $ne: userId }, deleted: false };
 
-		if (enterpriseId)
-			fullSearch = { ...fullSearch, enterpriseId: enterpriseId };
+		let fullSearch = '';
+		let searchValues = [];
 
 		if (search) {
-			fullSearch = {
-				...fullSearch,
-				$or: [
-					{ userName: { $regex: search, $options: 'i' } },
-					{ fullName: { $regex: search, $options: 'i' } },
-					{ email: { $regex: search, $options: 'i' } },
-					{ rol: { $regex: search, $options: 'i' } },
-				],
-			};
+			search = `%${search}%`;
+			fullSearch = 'username LIKE ? OR fullname LIKE ? OR email LIKE ?';
+			searchValues = [search, search, search];
 		}
 
-		const total = await repository.count(fullSearch);
-		const users = await repository.getAll(
+		const total = await repository.countEx(fullSearch, searchValues);
+
+		const users = await repository.getEx(
 			fullSearch,
+			searchValues,
 			uiFields,
-			{ _id: -1 },
+			'username',
 			page,
 			limit
 		);
@@ -229,17 +224,17 @@ const userService = {
 		return { total, users };
 	},
 
-	async getById(_id) {
-		if (!_id)
+	async getById(user_id) {
+		if (!user_id)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'El id del usuario es obligatorio.',
+				message: 'User id is required',
 			};
-		const result = await repository.getById(_id, uiFields);
+		const result = await repository.getById(user_id, uiFields);
 		if (!result)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Usuario no encontrado.',
+				message: 'User not found',
 			};
 		return result;
 	},
@@ -278,6 +273,8 @@ const userService = {
 		await repository.update(_id, user);
 		return repository.getById(_id, uiFields);
 	},
+
+	validate(user) {},
 };
 
 module.exports = userService;
