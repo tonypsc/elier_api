@@ -8,6 +8,10 @@ const router = express.Router();
 
 router.use('/users', jwt.authenticateToken, userRoutes);
 
+router.all('*', (req, res) => {
+	res.sendStatus(404);
+});
+
 // this is needed for serving angular front as static
 // router.all('*', (req, res) => {
 // 	res.sendFile(path.join(__dirname, '../../public/index.html'));

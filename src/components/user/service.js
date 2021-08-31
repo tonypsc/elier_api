@@ -58,6 +58,11 @@ const userService = {
 		return dto.single(user);
 	},
 
+	/**
+	 * Sends the recovery link to email and stores link data for user
+	 * @param {string} emailAddress
+	 * @returns {promise}
+	 */
 	async recover(emailAddress) {
 		//Check email exists
 		const user = await repository.getOne({ email: emailAddress });
@@ -70,22 +75,33 @@ const userService = {
 
 		// Create recover link
 		const link = crypto.randomBytes(32).toString('hex');
-		const newUser = { ...user, recoverLink: link, linkCreated: Date.now() };
+		const newUser = {
+			...user,
+			recover_link: link,
+			link_created_on: Date.now(),
+		};
 
-		await repository.update(user._id, newUser);
+		await repository.update(user.user_id, newUser);
+
 		// return mailer.sendMail(
 		// 	emailAddress,
-		// 	'ficos, Enlace de recuperación de contraseña',
-		// 	`Ha solicitado recuperar su contraseña, para continuar debe hacer click en el siguiente enlace<br/>
-		// 	    "El enlace caduca en 24 horas"<br/>
+		// 	'elier.org, Password recovery link',
+		// 	`You have requested to recover your password, click link to continue<br/>
+		// 	    "This link expires in 24 hours"<br/>
 		// 	    <a href="${link}">${link}</a>`
 		// );
 		return true;
 	},
 
+	/**
+	 * Returns the user with the link,
+	 * raises an error if user not found or link expired
+	 * @param {string} link
+	 * @returns {object}
+	 */
 	async verifyLink(link) {
-		// Verify link is valid
-		const user = await repository.getOne({ recoverLink: link });
+		// Verify link
+		const user = await repository.getOne({ recover_link: link });
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
@@ -93,9 +109,9 @@ const userService = {
 			};
 
 		// Verify link is active (24h)
-		const linkCreated = user.linkCreated ? user.linkCreated : 0;
+		const linkCreated = user.link_created_on ? user.link_created_on : 0;
 		const hours = (Date.now() - linkCreated) / 1000 / 60 / 60;
-		console.log({ hours, linkCreated });
+
 		if (hours > 24)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
@@ -114,16 +130,24 @@ const userService = {
 		return this.setPwd(user, password, confirm);
 	},
 
+	/**
+	 * User changes password
+	 * @param {string} user_id
+	 * @param {string} oldPwd
+	 * @param {string} newPwd
+	 * @param {string} confirm
+	 * @returns {object} user data
+	 */
 	async changePwd(user_id, oldPwd, newPwd, confirm) {
 		// Verify old password
-		const user = await repository.getOne({ user_id: user_id });
+		const user = await repository.getById(user_id);
 
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
 				message: 'Wrong user.',
 			};
-		if (!bcrypt.compareSync(oldPwd, user.password))
+		if (!oldPwd || !bcrypt.compareSync(oldPwd, user.pass))
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
 				message: 'Wrong current password.',
@@ -134,18 +158,36 @@ const userService = {
 
 	/**
 	 * Admin set password for user
+	 * @param {string} user_id
+	 * @param {string} password
+	 * @param {string} confirm
+	 * @returns {object} user data
 	 */
 	async newPwd(user_id, password, confirm) {
 		const user = await this.getById(user_id);
 		return this.setPwd(user, password, confirm);
 	},
 
+	/**
+	 *	Sets the password
+	 * @param {object} user
+	 * @param {string} password
+	 * @param {string} confirm
+	 * @returns {object} user data
+	 */
 	setPwd(user, password, confirm) {
-		if (!password)
+		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong password',
+				message: 'Wrong user',
 			};
+
+		if (!password || password.length < 6)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Wrong password (6-64 chars)',
+			};
+
 		if (password !== confirm)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
@@ -155,14 +197,14 @@ const userService = {
 		// Crypt pwd
 		const salt = bcrypt.genSaltSync(10);
 		const hashedPwd = bcrypt.hashSync(password, salt);
-		const newUser = { ...user, password: hashedPwd };
+		const newUser = { ...user, pass: hashedPwd };
 
 		// Update user
 		return repository.update(user.user_id, newUser);
 	},
 
 	/**
-	 * Inserts the user object in user table
+	 * Inserts the user row in user table
 	 * @param {string} username
 	 * @param {string} fullname
 	 * @param {string} password
@@ -173,16 +215,27 @@ const userService = {
 	 * @returns {promise} with the inserted object
 	 */
 	async insert(username, fullname, password, confirm, email, photo, rol_id) {
-		if (password != confirm)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Passwords do not match',
-			};
+		// validate fields
+		const validationResult = this.validate(
+			{
+				username,
+				fullname,
+				password,
+				confirm,
+				email,
+			},
+			true
+		);
 
+		if (validationResult !== true)
+			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+
+		// encrypt password
 		const salt = bcrypt.genSaltSync(10);
 		const hashedPwd = bcrypt.hashSync(password, salt);
 		const user_id = repository.getUUID();
 
+		// insert user
 		const user = {
 			user_id,
 			username,
@@ -198,6 +251,13 @@ const userService = {
 		return repository.getById(user_id, uiFields);
 	},
 
+	/**
+	 * Returns the rows from user matching the criteria
+	 * @param {string} search
+	 * @param {number} page
+	 * @param {number} limit
+	 * @returns
+	 */
 	async get(search, page, limit) {
 		page = page < 0 ? 0 : page - 1;
 
@@ -225,56 +285,111 @@ const userService = {
 	},
 
 	async getById(user_id) {
-		if (!user_id)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User id is required',
-			};
 		const result = await repository.getById(user_id, uiFields);
+
 		if (!result)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
 				message: 'User not found',
 			};
+
 		return result;
 	},
 
-	delete(userId, authUserId) {
-		if (!userId)
+	/**
+	 * Deletes the user
+	 * @param {string} user_id
+	 * @returns {promise}
+	 */
+	async delete(user_id) {
+		const result = await repository.delete(user_id);
+		if (!result || result.affectedRows === 0) {
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'El id del usuario es obligatorio.',
+				message: 'User not found',
 			};
+		}
 
-		//trying to delete himself
-		if (userId == authUserId)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Imposible eliminar el usuario activo.',
-			};
-
-		const updateUser = {
-			deleted: true,
-		};
-
-		return repository.update(userId, updateUser);
+		return true;
 	},
 
-	async update(_id, userName, fullName, email, rol, photo, status) {
+	/**
+	 * Updates user data
+	 * @param {string} user_id
+	 * @param {string} username
+	 * @param {string} fullname
+	 * @param {string} email
+	 * @param {string} rol_id
+	 * @param {string} photo
+	 * @param {boolean} status
+	 * @returns
+	 */
+	async update(user_id, username, fullname, email, rol_id, photo, status) {
 		const user = {
-			userName,
-			fullName,
+			username,
+			fullname,
 			email,
-			rol,
+			rol_id,
 			photo,
-			status,
 		};
 
-		await repository.update(_id, user);
-		return repository.getById(_id, uiFields);
+		if (status !== undefined) user.status = status;
+
+		// validate fields
+		const validationResult = this.validate(user);
+
+		if (validationResult !== true)
+			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+
+		const result = await repository.update(user_id, user);
+
+		if (!result || result.affectedRows === 0) {
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Errors ocurred or user not found',
+			};
+		}
+
+		return repository.getById(user_id, uiFields);
 	},
 
-	validate(user) {},
+	/**
+	 * Validates user data
+	 * @param {object} user
+	 * @param {boolean} validatePassword determines if password validation is executed
+	 * @returns true or errors array
+	 */
+	validate(user, validatePassword = false) {
+		if (!user) return ['Wrong user information'];
+
+		const errors = [];
+
+		if (!user.username || user.username.length > 40 || user.username < 2)
+			errors.push('User name (2-40 chars)');
+
+		if (!user.fullname || user.fullname.length > 80 || user.fullname < 2)
+			errors.push('Full name (2-80 chars)');
+
+		if (
+			!user.email ||
+			//eslint-disable-next-line
+			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(user.email)
+		)
+			errors.push('Invalid email address');
+
+		if (validatePassword) {
+			if (!user.password || !user.confirm) {
+				errors.push('Wrong password');
+			} else if (user.password !== user.confirm) {
+				errors.push('Password and confirmation do not match');
+			} else if (user.password.length < 6) {
+				errors.push('Password (1-6 chars)');
+			}
+		}
+
+		if (errors.length > 0) return errors.join('\n');
+		return true;
+	},
 };
 
 module.exports = userService;

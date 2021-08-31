@@ -1,6 +1,10 @@
 const db = require('../../services/mysql');
 const crypto = require('crypto');
+const config = require('../../config/default');
 
+/**
+ * Common crud operations
+ */
 class SharedRepository {
 	constructor(table, keyField) {
 		this.table = table;
@@ -8,8 +12,10 @@ class SharedRepository {
 	}
 
 	/**
-	 * Gets one
-	 * @param {object} search
+	 * Returns the first row of the result matching the criteria
+	 * @param {object} where
+	 * @param {array} fields
+	 * @returns {object}
 	 */
 	getOne(where, fields = ['*']) {
 		let sql = `SELECT ${fields.join(', ')} from ${this.table} `;
@@ -23,20 +29,28 @@ class SharedRepository {
 			params = Object.values(where);
 		}
 
-		return db
-			.execute(sql, params)
-			.then((data) => new Promise((resolve) => resolve(data[0])))
-			.catch((err) => new Promise((reject) => reject(err)));
+		return db.execute(sql, params).then((data) => data[0]);
 	}
 
+	/**
+	 * Returns the row with the id
+	 * @param {string} id
+	 * @param {array} fields
+	 * @returns {object}
+	 */
 	getById(id, fields = ['*']) {
 		const sql = `SELECT ${fields.join(', ')} from ${this.table} where 
 			${this.keyField} = ?`;
-		return db.execute(sql, [id]);
+		return db.execute(sql, [id]).then((res) => res[0]);
 	}
 
+	/**
+	 * Counts the rows matching the criteria
+	 * @param {object} where
+	 * @returns {number}
+	 */
 	count(where) {
-		let sql = `SELECT COUNT * from ${this.table} `;
+		let sql = `SELECT COUNT(*) from ${this.table} `;
 		let params = [];
 
 		if (where) {
@@ -47,7 +61,7 @@ class SharedRepository {
 			params = Object.values(where);
 		}
 
-		return db.execute(sql, params);
+		return db.execute(sql, params).then((res) => res[0]['COUNT(*)']);
 	}
 
 	/**
@@ -64,15 +78,25 @@ class SharedRepository {
 			params = whereValues;
 		}
 
-		return db
-			.execute(sql, params)
-			.then((res) => new Promise((resolve) => resolve(res[0]['COUNT(*)'])))
-			.catch((err) => new Promise((reject) => reject(err)));
+		return db.execute(sql, params).then((res) => res[0]['COUNT(*)']);
 	}
 
-	get(where, fields = '*', order, page = 0, pageSize = 10) {
-		const skip = page * pageSize;
-		let sql = `SELECT ${fields} from ${this.table} LIMIT ${skip}, ${pageSize} `;
+	/**
+	 * Returns a set of rows matching the conditions
+	 * @param {object} where
+	 * @param {array} fields
+	 * @param {string} order
+	 * @param {number} page
+	 * @param {number} limit
+	 * @returns
+	 */
+	get(where, fields = ['*'], order, page, limit) {
+		page = page || 0;
+		limit = limit || config.PAGE_SIZE;
+		const skip = page * limit;
+		let sql = `SELECT ${fields.join(', ')} from ${
+			this.table
+		} LIMIT ${skip}, ${limit} `;
 		let params = [];
 
 		if (where) {
@@ -121,11 +145,14 @@ class SharedRepository {
 
 		sql += `LIMIT ${skip}, ${limit}`;
 
-		console.log(sql);
-
 		return db.execute(sql, params);
 	}
 
+	/**
+	 * Inserts the row
+	 * @param {object} resource
+	 * @returns {promise}
+	 */
 	insert(resource) {
 		const fields = Object.keys(resource).join(', ');
 		const values = Object.values(resource).map((v) =>
@@ -136,27 +163,43 @@ class SharedRepository {
 		return db.execute(sql, values);
 	}
 
+	/**
+	 * Deletes the row
+	 * @param {string} id
+	 * @returns {promise}
+	 */
 	delete(id) {
 		const sql = `DELETE FROM ${this.table} WHERE ${this.keyField} = ?`;
 		return db.execute(sql, [id]);
 	}
 
+	/**
+	 * Updates the row
+	 * @param {string} id
+	 * @param {object} resource
+	 * @returns {object}	updated resource
+	 */
 	update(id, resource) {
-		const fields = Object.keys(resource).join(', ');
-		const values = [];
+		const fields = [];
+		const values = Object.values(resource);
+		values.push(id);
 
-		for (const field in fields) {
-			const value =
-				typeof resource[field] === 'string'
-					? `'${resource[field]}'`
-					: `${resource[field]}`;
-			values.push(`${field} = ${value}`);
+		for (const field of Object.keys(resource)) {
+			fields.push(`${field} = ?`);
 		}
 
-		const sql = `UPDATE ${this.table} SET (${values.join(', ')}) WHERE id = ?`;
-		db.execute(sql, [id]);
+		console.log(values);
+
+		const sql = `UPDATE ${this.table} SET ${fields.join(', ')} WHERE ${
+			this.keyField
+		} = ?`;
+		return db.execute(sql, values);
 	}
 
+	/**
+	 * Returns a uuid string created using current milisecond and random
+	 * @returns {string}
+	 */
 	getUUID() {
 		return (
 			new Date().getTime().toString(36) + crypto.randomBytes(12).toString('hex')

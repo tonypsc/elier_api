@@ -1,12 +1,10 @@
 const service = require('./service');
 const errorHandling = require('../../services/errorHandling');
 const jwt = require('../../middleware/jwtauth');
-const constants = require('../../constants');
 const formidable = require('formidable');
 const path = require('path');
 const fileHelper = require('../../utils/fileHelper');
 const fs = require('fs');
-const { resolve } = require('path');
 
 const userController = {
 	async login(req, res) {
@@ -38,6 +36,9 @@ const userController = {
 		}
 	},
 
+	/**
+	 * Checks if link provided is correct to show set password dialog on front
+	 */
 	async verifyLink(req, res) {
 		try {
 			await service.verifyLink(req.params.id);
@@ -63,8 +64,8 @@ const userController = {
 
 	async setPassword(req, res) {
 		try {
-			const { _id, password, confirm } = req.body;
-			const user = await service.getById(_id);
+			const { user_id, password, confirm } = req.body;
+			const user = await service.getById(user_id);
 			await service.setPwd(user, password, confirm);
 			res.json({ status: 'success' });
 		} catch (error) {
@@ -77,7 +78,8 @@ const userController = {
 	async changePassword(req, res) {
 		try {
 			const { old, password, confirm } = req.body;
-			await service.changePwd(req.user.userId, old, password, confirm);
+
+			await service.changePwd(req.user.user_id, old, password, confirm);
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -145,12 +147,7 @@ const userController = {
 
 	async delete(req, res) {
 		try {
-			if (req.user?.rol !== 'admin' && req.user?.rol !== 'sa')
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: constants.ACCESS_DENIED_MSG,
-				};
-			await service.delete(req.params.id, req.user.userId);
+			await service.delete(req.params.id);
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -161,15 +158,9 @@ const userController = {
 
 	async update(req, res) {
 		try {
-			if (req.user?.rol !== 'admin' && req.user?.rol !== 'sa')
-				throw {
-					code: constants.CUSTOM_ERROR_CODE,
-					message: constants.ACCESS_DENIED_MSG,
-				};
-
 			const form = new formidable.IncomingForm();
 
-			const { _id, userName, fullName, email, photo, rol, status } =
+			const { user_id, username, fullname, email, photo, rol_id, status } =
 				await new Promise((resolve, reject) => {
 					form.parse(req, async function (err, fields, files) {
 						if (err) {
@@ -192,11 +183,11 @@ const userController = {
 			}
 
 			const user = await service.update(
-				_id,
-				userName,
-				fullName,
+				user_id,
+				username,
+				fullname,
 				email,
-				rol,
+				rol_id,
 				uniqueFileName,
 				status
 			);

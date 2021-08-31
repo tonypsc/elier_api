@@ -256,3 +256,117 @@ Undeclared variable: NaN
 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'ORDER BY ?' at line 2
 						
 ==========================================
+2021-8
+						-30 12
+						:44:34
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'SELECTd user_id, userName, fullName, email, photo, status, rol_id, theme, logged' at line 1
+						
+==========================================
+2021-8
+						-31 8
+						:24:2
+User name (2 - 40 chars)
+						
+==========================================
+2021-8
+						-31 9
+						:14:41
+Bind parameters must not contain undefined. To pass SQL NULL specify JS null
+						
+==========================================
+2021-8
+						-31 9
+						:15:16
+Bind parameters must not contain undefined. To pass SQL NULL specify JS null
+						
+==========================================
+2021-8
+						-31 9
+						:18:4
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(username = ?, fullname = ?, email = ?, rol_id = ?, photo = ?) WHERE id = ?' at line 1
+						
+==========================================
+2021-8
+						-31 9
+						:19:9
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '(username = ?, fullname = ?, email = ?, rol_id = ?, photo = ?) WHERE user_id = ?' at line 1
+						
+==========================================
+2021-8
+						-31 9
+						:20:37
+Duplicate entry 'deref1@ddd.com' for key 'UNIQUE_EMAIL'
+						
+==========================================
+2021-8
+						-31 9
+						:34:22
+Bind parameters must not contain undefined. To pass SQL NULL specify JS null
+						
+==========================================
+2021-8
+						-31 9
+						:37:59
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:39:23
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:39:56
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:40:24
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:41:6
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:44:15
+Unknown column 'password' in 'field list'
+						
+==========================================
+2021-8
+						-31 9
+						:50:33
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 9
+						:51:11
+data and hash arguments required
+						
+==========================================
+2021-8
+						-31 10
+						:11:45
+Bind parameters must not contain undefined. To pass SQL NULL specify JS null
+						
+==========================================
+2021-8
+						-31 10
+						:12:13
+Unknown column 'recoverLink' in 'field list'
+						
+==========================================
+2021-8
+						-31 10
+						:23:8
+Unknown column 'recoverLink' in 'where clause'
+						
+==========================================
