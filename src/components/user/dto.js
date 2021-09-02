@@ -9,8 +9,10 @@ const single = (resource, authUser) => ({
 	theme: resource.theme,
 	logged_in: resource.logged_in,
 	language: resource.language,
-	created_on: authUser?.rol_id === 'admin' ? resource.created_on : undefined,
-	last_login: authUser?.rol_id === 'admin' ? resource.last_login : undefined,
+	created_on:
+		authUser && authUser.rol_id === 'admin' ? resource.created_on : undefined,
+	last_login:
+		authUser && authUser.rol_id === 'admin' ? resource.last_login : undefined,
 });
 
 const multiple = (resources, autUser) =>
