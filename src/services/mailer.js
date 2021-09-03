@@ -16,7 +16,6 @@ const mailer = {
 				user: config.MAIL_USER,
 				pass: config.MAIL_PWD,
 			},
-			proxy: 'http://felix.perez:Unpetmcpep87*@proxy.rabi.azcuba.cu:3128/',
 		});
 
 		const mailOptions = {

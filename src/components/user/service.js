@@ -121,7 +121,7 @@ const userService = {
 			'elier.org, Password recovery link',
 			`You have requested to recover your password, click link to continue<br/>
 						"This link expires in 24 hours"<br/>
-						<a href="${link}">${link}</a>`
+						<a href="http://elier.org/${link}">Recover password</a>`
 		);
 	},
 
@@ -308,12 +308,12 @@ const userService = {
 
 		await repository.insert(user);
 
-		mailer.sendMail(
+		await mailer.sendMail(
 			email,
 			'elier.org, Confirm registration',
 			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
 						"This link expires in 72 hours"<br/>
-						<a href="${config.BASE_URL}users/confirmRegister/${confirmation_link}"><h3>Confirm registration</h3></a>`
+						<a href="http://elier.org/${confirmation_link}"><h3>Confirm registration</h3></a>`
 		);
 
 		return repository.getById(user_id, uiFields);
@@ -365,7 +365,7 @@ const userService = {
 			'elier.org, Confirm registration',
 			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
 			    "This link expires in 72 hours"<br/>
-			    <a href="${config.BASE_URL}users/confirmRegister/${confirmation_link}"><h3>Confirm registration</h3></a>`
+			    <a href="http://elier.org/${confirmation_link}"><h3>Confirm registration</h3></a>`
 		);
 	},
 
@@ -380,7 +380,7 @@ const userService = {
 				message: 'Invalid confirmation link',
 			};
 
-		const user = repository.getOne({ confirmation_link: link });
+		const user = await repository.getOne({ confirmation_link: link });
 
 		if (!user)
 			throw {
@@ -399,7 +399,7 @@ const userService = {
 			};
 
 		// check status different from unconfirmed(3), may be a hack attempt
-		if (user.status !== UNCONFIRMED)
+		if (user.status != UNCONFIRMED)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
 				message: 'Invalid confirmation link',
