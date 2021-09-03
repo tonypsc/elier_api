@@ -197,7 +197,7 @@ class SharedRepository {
 	}
 
 	/**
-	 * Returns a uuid string created using current milisecond and random
+	 * Returns a uuid string created using current milisecond and random string
 	 * @returns {string}
 	 */
 	getUUID() {

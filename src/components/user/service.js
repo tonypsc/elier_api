@@ -71,6 +71,13 @@ const userService = {
 	 */
 	async recover(emailAddress) {
 		//Check email exists
+		if (!emailAddress) {
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Email address is required.',
+			};
+		}
+
 		const user = await repository.getOne({ email: emailAddress });
 
 		if (!user)
@@ -106,8 +113,15 @@ const userService = {
 	 * @returns {object}
 	 */
 	async verifyLink(link) {
+		if (!link)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Wrong link.',
+			};
+
 		// Verify link
 		const user = await repository.getOne({ recover_link: link });
+
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
@@ -127,7 +141,17 @@ const userService = {
 		return user;
 	},
 
+	/**
+	 * Resets the password, via recover
+	 * @param {string} link
+	 * @param {string} password
+	 * @param {string} confirm
+	 * @returns
+	 */
 	async resetPwd(link, password, confirm) {
+		if (!link || !password || !confirm)
+			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Wrong input data' };
+
 		if (!link)
 			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Wrong link' };
 
@@ -145,6 +169,12 @@ const userService = {
 	 * @returns {object} user data
 	 */
 	async changePwd(user_id, oldPwd, newPwd, confirm) {
+		if (!user_id || !oldPwd || !newPwd || !confirm)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Incorrect input data',
+			};
+
 		// Verify old password
 		const user = await repository.getById(user_id);
 
@@ -182,6 +212,12 @@ const userService = {
 	 * @returns {object} user data
 	 */
 	setPwd(user, password, confirm) {
+		if (!user || !password || !confirm)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Incorrect input data',
+			};
+
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
@@ -290,7 +326,18 @@ const userService = {
 		return { total, users };
 	},
 
+	/**
+	 * Returns the user identified by id
+	 * @param {string} user_id
+	 * @returns {object}
+	 */
 	async getById(user_id) {
+		if (!user_id)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Incorrect input data',
+			};
+
 		const result = await repository.getById(user_id, uiFields);
 
 		if (!result)
@@ -308,7 +355,14 @@ const userService = {
 	 * @returns {promise}
 	 */
 	async delete(user_id) {
+		if (!user_id)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Incorrect input data',
+			};
+
 		const result = await repository.delete(user_id);
+
 		if (!result || result.affectedRows === 0) {
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
