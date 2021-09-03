@@ -188,8 +188,6 @@ class SharedRepository {
 			fields.push(`${field} = ?`);
 		}
 
-		console.log(values);
-
 		const sql = `UPDATE ${this.table} SET ${fields.join(', ')} WHERE ${
 			this.keyField
 		} = ?`;

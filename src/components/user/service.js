@@ -2,8 +2,9 @@ const bcrypt = require('bcrypt');
 const constants = require('../../constants');
 const crypto = require('crypto');
 const SharedRepository = require('../shared/SharedRepository');
-// const mailer = require('../services/mailer');
 const dto = require('./dto');
+const mailer = require('../../services/mailer');
+const config = require('../../config/default');
 
 const uiFields = [
 	'user_id',
@@ -18,6 +19,10 @@ const uiFields = [
 	'language',
 ];
 
+const UNCONFIRMED = 3,
+	ACTIVE = 1,
+	INACTIVE = 0;
+
 const repository = new SharedRepository('user', 'user_id');
 
 const userService = {
@@ -31,7 +36,7 @@ const userService = {
 		if (!userName || !password)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong input data.',
+				message: 'Wrong input data',
 			};
 
 		const user = await repository.getOne({ username: userName });
@@ -40,14 +45,28 @@ const userService = {
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User not found.',
+				message: 'User not found',
 			};
 
-		// user is inactive
+		// user inactive
+		if (user.status !== INACTIVE)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'User account disabled',
+			};
+
+		// registration unconfirmed
+		if (user.status !== UNCONFIRMED)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Confirmation pendding',
+			};
+
+		// other status different from active (banned, prohibited, etc)
 		if (user.status !== 1)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User account disabled.',
+				message: 'User account not active',
 			};
 
 		// check password
@@ -57,7 +76,7 @@ const userService = {
 		)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong credentials.',
+				message: 'Wrong credentials',
 			};
 
 		// success login
@@ -74,7 +93,7 @@ const userService = {
 		if (!emailAddress) {
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Email address is required.',
+				message: 'Email address is required',
 			};
 		}
 
@@ -83,7 +102,7 @@ const userService = {
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong email address.',
+				message: 'Wrong email address',
 			};
 
 		// Create recover link
@@ -96,14 +115,14 @@ const userService = {
 
 		await repository.update(user.user_id, newUser);
 
-		// return mailer.sendMail(
-		// 	emailAddress,
-		// 	'elier.org, Password recovery link',
-		// 	`You have requested to recover your password, click link to continue<br/>
-		// 	    "This link expires in 24 hours"<br/>
-		// 	    <a href="${link}">${link}</a>`
-		// );
-		return true;
+		// send the email
+		return mailer.sendMail(
+			emailAddress,
+			'elier.org, Password recovery link',
+			`You have requested to recover your password, click link to continue<br/>
+						"This link expires in 24 hours"<br/>
+						<a href="${link}">${link}</a>`
+		);
 	},
 
 	/**
@@ -116,7 +135,7 @@ const userService = {
 		if (!link)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong link.',
+				message: 'Wrong link',
 			};
 
 		// Verify link
@@ -125,7 +144,7 @@ const userService = {
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong link.',
+				message: 'Wrong link',
 			};
 
 		// Verify link is active (24h)
@@ -135,7 +154,7 @@ const userService = {
 		if (hours > 24)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Link expired.',
+				message: 'Link expired',
 			};
 
 		return user;
@@ -181,12 +200,12 @@ const userService = {
 		if (!user)
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong user.',
+				message: 'Wrong user',
 			};
 		if (!oldPwd || !bcrypt.compareSync(oldPwd, user.pass))
 			throw {
 				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong current password.',
+				message: 'Wrong current password',
 			};
 
 		return this.setPwd(user, newPwd, confirm);
@@ -243,6 +262,161 @@ const userService = {
 
 		// Update user
 		return repository.update(user.user_id, newUser);
+	},
+
+	/**
+	 * Inserts the row in user and sends the confirmation email with the link
+	 * @param {string} fullname
+	 * @param {string} email
+	 * @param {string} password
+	 * @param {string} confirm
+	 * @returns
+	 */
+	async register(fullname, email, pass, confirm) {
+		let user = {
+			username: email,
+			fullname: fullname || email,
+			pass,
+			confirm,
+			email,
+		};
+
+		// validate fields
+		const validationResult = this.validate(user, true);
+
+		if (validationResult !== true)
+			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+
+		// encrypt password
+		const salt = bcrypt.genSaltSync(10);
+		const hashedPwd = bcrypt.hashSync(pass, salt);
+		const user_id = repository.getUUID();
+		const confirmation_link = crypto.randomBytes(32).toString('hex');
+
+		// insert user
+		user = {
+			...user,
+			user_id,
+			pass: hashedPwd,
+			rol_id: 'user',
+			created_on: new Date().getTime(),
+			status: UNCONFIRMED,
+			confirmation_link,
+		};
+
+		delete user.confirm;
+
+		await repository.insert(user);
+
+		mailer.sendMail(
+			email,
+			'elier.org, Confirm registration',
+			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
+						"This link expires in 72 hours"<br/>
+						<a href="${config.BASE_URL}users/confirmRegister/${confirmation_link}"><h3>Confirm registration</h3></a>`
+		);
+
+		return repository.getById(user_id, uiFields);
+	},
+
+	/**
+	 * Sends the confirmation link to user
+	 * @param {string} email
+	 */
+	async sendConfirmationLink(email) {
+		if (!email)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Invalid email addresss',
+			};
+
+		// get the user
+		const user = await repository.getOne({ email });
+		if (!user)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Invalid email addresss',
+			};
+
+		if (user.status !== UNCONFIRMED)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Wrong user status',
+			};
+
+		// generate confirmation link
+		const confirmation_link = crypto.randomBytes(32).toString('hex');
+
+		// update user confirmation_link and created_on
+		user.confirmation_link = confirmation_link;
+		user.created_on = new Date().getTime();
+		const result = await repository.update(user.user_id, user);
+
+		if (!result || result.affectedRows === 0) {
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Unexpected errors ocurred',
+			};
+		}
+
+		// send email
+		return mailer.sendMail(
+			email,
+			'elier.org, Confirm registration',
+			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
+			    "This link expires in 72 hours"<br/>
+			    <a href="${config.BASE_URL}users/confirmRegister/${confirmation_link}"><h3>Confirm registration</h3></a>`
+		);
+	},
+
+	/**
+	 * Marks user status as active
+	 * @param {string} link
+	 */
+	async confirmRegistation(link) {
+		if (!link)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Invalid confirmation link',
+			};
+
+		const user = repository.getOne({ confirmation_link: link });
+
+		if (!user)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Invalid confirmation link',
+			};
+
+		// check expire date
+		const time_elapsed =
+			(new Date().getTime() - user.created_on) / 1000 / 60 / 60;
+
+		if (config.CONFIRMATION_EXPIRES < time_elapsed)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Confirmation link expired',
+			};
+
+		// check status different from unconfirmed(3), may be a hack attempt
+		if (user.status !== UNCONFIRMED)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Invalid confirmation link',
+			};
+
+		// change user status
+		user.status = ACTIVE;
+		const result = await repository.update(user.user_id, user);
+
+		if (!result || result.affectedRows === 0) {
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Unexpected errors ocurred',
+			};
+		}
+
+		return repository.getById(user.user_id, uiFields);
 	},
 
 	/**
@@ -427,8 +601,8 @@ const userService = {
 		if (!user.username || user.username.length > 40 || user.username < 2)
 			errors.push('User name (2-40 chars)');
 
-		if (!user.fullname || user.fullname.length > 80 || user.fullname < 2)
-			errors.push('Full name (2-80 chars)');
+		// if (!user.fullname || user.fullname.length > 80 || user.fullname < 2)
+		// 	errors.push('Full name (2-80 chars)');
 
 		if (
 			!user.email ||
@@ -438,11 +612,11 @@ const userService = {
 			errors.push('Invalid email address');
 
 		if (validatePassword) {
-			if (!user.password || !user.confirm) {
+			if (!user.pass || !user.confirm) {
 				errors.push('Wrong password');
-			} else if (user.password !== user.confirm) {
+			} else if (user.pass !== user.confirm) {
 				errors.push('Password and confirmation do not match');
-			} else if (user.password.length < 6) {
+			} else if (user.pass.length < 6) {
 				errors.push('Password (1-6 chars)');
 			}
 		}

@@ -15,6 +15,8 @@ module.exports = {
 			'/setpwd',
 			'/uploads',
 			'/register',
+			'/confirmregister',
+			'/resendconfirmation',
 		];
 
 		for (const path of excludedPaths) {

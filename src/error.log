@@ -370,3 +370,75 @@ Unknown column 'recoverLink' in 'field list'
 Unknown column 'recoverLink' in 'where clause'
 						
 ==========================================
+2021-9
+						-3 10
+						:0:8
+Column 'fullname' cannot be null
+						
+==========================================
+2021-9
+						-3 10
+						:0:58
+Column 'fullname' cannot be null
+						
+==========================================
+2021-9
+						-3 10
+						:1:45
+Unknown column 'password' in 'field list'
+						
+==========================================
+2021-9
+						-3 10
+						:5:25
+Unknown column 'confirm' in 'field list'
+						
+==========================================
+2021-9
+						-3 10
+						:6:24
+Duplicate entry 'deref1@ddd.com' for key 'UNIQUE_EMAIL'
+						
+==========================================
+2021-9
+						-3 10
+						:9:39
+Duplicate entry 'deref169@ddd.com' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-9
+						-3 10
+						:28:4
+Cannot set headers after they are sent to the client
+						
+==========================================
+2021-9
+						-3 10
+						:29:19
+Cannot set headers after they are sent to the client
+						
+==========================================
+2021-9
+						-3 10
+						:31:43
+Cannot set headers after they are sent to the client
+						
+==========================================
+2021-9
+						-3 10
+						:33:31
+Cannot set headers after they are sent to the client
+						
+==========================================
+2021-9
+						-3 11
+						:34:40
+Unexpected socket close
+						
+==========================================
+2021-9
+						-3 11
+						:36:40
+Unexpected socket close
+						
+==========================================
