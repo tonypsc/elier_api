@@ -28,6 +28,12 @@ const userService = {
 	 * @returns {object} user data
 	 */
 	async login(userName, password) {
+		if (!userName || !password)
+			throw {
+				code: constants.CUSTOM_ERROR_CODE,
+				message: 'Wrong input data.',
+			};
+
 		const user = await repository.getOne({ username: userName });
 
 		// user does not exists
