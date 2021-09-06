@@ -12,6 +12,27 @@ class SharedRepository {
 	}
 
 	/**
+	 * Returns all the rows matching the criteria
+	 * @param {object} where
+	 * @param {array} fields
+	 * @returns {promise}
+	 */
+	getAll(where, fields = ['*']) {
+		let sql = `SELECT ${fields.join(', ')} from ${this.table} `;
+		let params = [];
+
+		if (where) {
+			const fields = Object.keys(where)
+				.map((f) => `${f} = ?`)
+				.join(' AND ');
+			sql += `WHERE ${fields}`;
+			params = Object.values(where);
+		}
+
+		return db.execute(sql, params);
+	}
+
+	/**
 	 * Returns the first row of the result matching the criteria
 	 * @param {object} where
 	 * @param {array} fields
@@ -135,7 +156,7 @@ class SharedRepository {
 
 		if (where) {
 			sql += `WHERE ${where}`;
-			params = Object.values(whereValues);
+			params = whereValues;
 		}
 
 		if (order) {
@@ -191,6 +212,28 @@ class SharedRepository {
 		const sql = `UPDATE ${this.table} SET ${fields.join(', ')} WHERE ${
 			this.keyField
 		} = ?`;
+		return db.execute(sql, values);
+	}
+
+	/**
+	 * Updates the rows matching the criteria
+	 * @param {string} where
+	 * @param {array} whereValues
+	 * @param {object} resource
+	 * @returns {promise}
+	 */
+	updateEx(where, whereValues, resource) {
+		const fields = [];
+		let values = Object.values(resource);
+
+		for (const field of Object.keys(resource)) {
+			fields.push(`${field} = ?`);
+		}
+
+		const sql = `UPDATE ${this.table} SET ${fields.join(', ')} WHERE ${where}`;
+
+		values = [...values, ...whereValues];
+
 		return db.execute(sql, values);
 	}
 

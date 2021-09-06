@@ -472,3 +472,39 @@ Cannot read property 'body' of undefined
 Cannot read property 'body' of undefined
 						
 ==========================================
+2021-9
+						-6 10
+						:11:51
+service.get is not a function
+						
+==========================================
+2021-9
+						-6 10
+						:12:22
+service.get is not a function
+						
+==========================================
+2021-9
+						-6 10
+						:12:52
+Cannot set headers after they are sent to the client
+						
+==========================================
+2021-9
+						-6 10
+						:15:37
+service.get is not a function
+						
+==========================================
+2021-9
+						-6 10
+						:16:26
+You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'read = ?' at line 1
+						
+==========================================
+2021-9
+						-6 12
+						:23:15
+service.marckRead is not a function
+						
+==========================================

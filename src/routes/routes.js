@@ -1,14 +1,14 @@
 const express = require('express');
 const jwt = require('../middleware/jwtauth');
 const userRoutes = require('../components/user/routes');
-const commentRoutes = require('../components/comment/routes');
+const notificationRoutes = require('../components/notification/routes');
 
 //const path = require('path');
 
 const router = express.Router();
 
 router.use('/users', jwt.authenticateToken, userRoutes);
-router.use('/comments', jwt.authenticateToken, commentRoutes);
+router.use('/notifications', jwt.authenticateToken, notificationRoutes);
 
 router.all('*', (req, res) => {
 	res.sendStatus(404);
