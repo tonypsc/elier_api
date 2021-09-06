@@ -1,5 +1,5 @@
 const service = require('./service');
-const errorHandling = require('../../services/errorHandling');
+const errorHandling = require('../../error/errorHandling');
 const jwt = require('../../middleware/jwtauth');
 const formidable = require('formidable');
 const path = require('path');

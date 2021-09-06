@@ -1,33 +1,35 @@
 {
-  "name": "ficos_api",
-  "version": "1.0.0",
-  "description": "ficos",
-  "main": "index.js",
-  "scripts": {
-    "dev": "nodemon src/bin/www.js"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
-    "formidable": "^1.2.2",
-    "jsonwebtoken": "^8.5.1",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.2",
-    "mysql2": "^2.3.0",
-    "nodemailer": "^6.6.0"
-  },
-  "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.24.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "nodemon": "^2.0.7"
-  }
+	"name": "elier_api",
+	"version": "1.0.0",
+	"description": "rest api for elier.org",
+	"main": "index.js",
+	"scripts": {
+		"dev": "nodemon src/bin/www.js",
+		"test": "jest"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"bcrypt": "^5.0.1",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"express-fileupload": "^1.2.1",
+		"formidable": "^1.2.2",
+		"jsonwebtoken": "^8.5.1",
+		"morgan": "^1.10.0",
+		"multer": "^1.4.2",
+		"mysql2": "^2.3.0",
+		"nodemailer": "^6.6.0"
+	},
+	"devDependencies": {
+		"eslint": "^7.32.0",
+		"eslint-config-airbnb-base": "^14.2.1",
+		"eslint-config-google": "^0.14.0",
+		"eslint-config-standard": "^16.0.3",
+		"eslint-plugin-import": "^2.24.1",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-promise": "^5.1.0",
+		"jest": "^27.1.0",
+		"nodemon": "^2.0.7"
+	}
 }

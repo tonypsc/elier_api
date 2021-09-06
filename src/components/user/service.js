@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
-const constants = require('../../constants');
 const crypto = require('crypto');
 const SharedRepository = require('../shared/SharedRepository');
 const dto = require('./dto');
 const mailer = require('../../services/mailer');
 const config = require('../../config/default');
+const CustomError = require('../../error/CustomError');
 
 const uiFields = [
 	'user_id',
@@ -33,51 +33,31 @@ const userService = {
 	 * @returns {object} user data
 	 */
 	async login(userName, password) {
-		if (!userName || !password)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong input data',
-			};
+		if (!userName || !password) throw new CustomError('Wrong input data');
 
 		const user = await repository.getOne({ username: userName });
 
 		// user does not exists
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User not found',
-			};
+		if (!user) throw new CustomError('User not found');
 
 		// user inactive
-		if (user.status !== INACTIVE)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User account disabled',
-			};
+		if (user.status === INACTIVE)
+			throw new CustomError('User account disabled');
 
 		// registration unconfirmed
-		if (user.status !== UNCONFIRMED)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Confirmation pendding',
-			};
+		if (user.status === UNCONFIRMED)
+			throw new CustomError('Confirmation pendding');
 
 		// other status different from active (banned, prohibited, etc)
-		if (user.status !== 1)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User account not active',
-			};
+		if (user.status !== ACTIVE)
+			throw new CustomError('User account not active');
 
 		// check password
 		if (
 			!bcrypt.compareSync(password, user.pass)
 			// &&	!bcrypt.compareSync(password, saUser.password)
 		)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong credentials',
-			};
+			throw new CustomError('Wrong credentials');
 
 		// success login
 		return dto.single(user);
@@ -91,19 +71,12 @@ const userService = {
 	async recover(emailAddress) {
 		//Check email exists
 		if (!emailAddress) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Email address is required',
-			};
+			throw new CustomError('Email address is required');
 		}
 
 		const user = await repository.getOne({ email: emailAddress });
 
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong email address',
-			};
+		if (!user) throw new CustomError('Wrong email address');
 
 		// Create recover link
 		const link = crypto.randomBytes(32).toString('hex');
@@ -132,30 +105,18 @@ const userService = {
 	 * @returns {object}
 	 */
 	async verifyLink(link) {
-		if (!link)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong link',
-			};
+		if (!link) throw new CustomError('Wrong link');
 
 		// Verify link
 		const user = await repository.getOne({ recover_link: link });
 
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong link',
-			};
+		if (!user) throw new CustomError('Wrong link');
 
 		// Verify link is active (24h)
 		const linkCreated = user.link_created_on ? user.link_created_on : 0;
 		const hours = (Date.now() - linkCreated) / 1000 / 60 / 60;
 
-		if (hours > 24)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Link expired',
-			};
+		if (hours > 24) throw new CustomError('Link expired');
 
 		return user;
 	},
@@ -169,10 +130,9 @@ const userService = {
 	 */
 	async resetPwd(link, password, confirm) {
 		if (!link || !password || !confirm)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Wrong input data' };
+			throw new CustomError('Wrong input data');
 
-		if (!link)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: 'Wrong link' };
+		if (!link) throw new CustomError('Wrong link');
 
 		// Check link
 		const user = await this.verifyLink(link);
@@ -189,24 +149,14 @@ const userService = {
 	 */
 	async changePwd(user_id, oldPwd, newPwd, confirm) {
 		if (!user_id || !oldPwd || !newPwd || !confirm)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Incorrect input data',
-			};
+			throw new CustomError('Incorrect input data');
 
 		// Verify old password
 		const user = await repository.getById(user_id);
 
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong user',
-			};
+		if (!user) throw new CustomError('Wrong user');
 		if (!oldPwd || !bcrypt.compareSync(oldPwd, user.pass))
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong current password',
-			};
+			throw new CustomError('Wrong current password');
 
 		return this.setPwd(user, newPwd, confirm);
 	},
@@ -232,28 +182,15 @@ const userService = {
 	 */
 	setPwd(user, password, confirm) {
 		if (!user || !password || !confirm)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Incorrect input data',
-			};
+			throw new CustomError('Incorrect input data');
 
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong user',
-			};
+		if (!user) throw new CustomError('Wrong user');
 
 		if (!password || password.length < 6)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong password (6-64 chars)',
-			};
+			throw new CustomError('Wrong password (6-64 chars)');
 
 		if (password !== confirm)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'New password and confirmation don`t match',
-			};
+			throw new CustomError('New password and confirmation don`t match');
 
 		// Crypt pwd
 		const salt = bcrypt.genSaltSync(10);
@@ -284,8 +221,7 @@ const userService = {
 		// validate fields
 		const validationResult = this.validate(user, true);
 
-		if (validationResult !== true)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+		if (validationResult !== true) throw new CustomError(validationResult);
 
 		// encrypt password
 		const salt = bcrypt.genSaltSync(10);
@@ -324,25 +260,13 @@ const userService = {
 	 * @param {string} email
 	 */
 	async sendConfirmationLink(email) {
-		if (!email)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Invalid email addresss',
-			};
+		if (!email) throw new CustomError('Invalid email addresss');
 
 		// get the user
 		const user = await repository.getOne({ email });
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Invalid email addresss',
-			};
+		if (!user) throw new CustomError('Invalid email addresss');
 
-		if (user.status !== UNCONFIRMED)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Wrong user status',
-			};
+		if (user.status !== UNCONFIRMED) throw new CustomError('Wrong user status');
 
 		// generate confirmation link
 		const confirmation_link = crypto.randomBytes(32).toString('hex');
@@ -353,10 +277,7 @@ const userService = {
 		const result = await repository.update(user.user_id, user);
 
 		if (!result || result.affectedRows === 0) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Unexpected errors ocurred',
-			};
+			throw new CustomError('Unexpected errors ocurred');
 		}
 
 		// send email
@@ -374,46 +295,29 @@ const userService = {
 	 * @param {string} link
 	 */
 	async confirmRegistation(link) {
-		if (!link)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Invalid confirmation link',
-			};
+		if (!link) throw new CustomError('Invalid confirmation link');
 
 		const user = await repository.getOne({ confirmation_link: link });
 
-		if (!user)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Invalid confirmation link',
-			};
+		if (!user) throw new CustomError('Invalid confirmation link');
 
 		// check expire date
 		const time_elapsed =
 			(new Date().getTime() - user.created_on) / 1000 / 60 / 60;
 
 		if (config.CONFIRMATION_EXPIRES < time_elapsed)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Confirmation link expired',
-			};
+			throw new CustomError('Confirmation link expired');
 
 		// check status different from unconfirmed(3), may be a hack attempt
 		if (user.status != UNCONFIRMED)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Invalid confirmation link',
-			};
+			throw new CustomError('Invalid confirmation link');
 
 		// change user status
 		user.status = ACTIVE;
 		const result = await repository.update(user.user_id, user);
 
 		if (!result || result.affectedRows === 0) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Unexpected errors ocurred',
-			};
+			throw new CustomError('Unexpected errors ocurred');
 		}
 
 		return repository.getById(user.user_id, uiFields);
@@ -443,8 +347,7 @@ const userService = {
 			true
 		);
 
-		if (validationResult !== true)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+		if (validationResult !== true) throw new CustomError(validationResult);
 
 		// encrypt password
 		const salt = bcrypt.genSaltSync(10);
@@ -506,19 +409,11 @@ const userService = {
 	 * @returns {object}
 	 */
 	async getById(user_id) {
-		if (!user_id)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Incorrect input data',
-			};
+		if (!user_id) throw new CustomError('Incorrect input data');
 
 		const result = await repository.getById(user_id, uiFields);
 
-		if (!result)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User not found',
-			};
+		if (!result) throw new CustomError('User not found');
 
 		return result;
 	},
@@ -529,19 +424,12 @@ const userService = {
 	 * @returns {promise}
 	 */
 	async delete(user_id) {
-		if (!user_id)
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Incorrect input data',
-			};
+		if (!user_id) throw new CustomError('Incorrect input data');
 
 		const result = await repository.delete(user_id);
 
 		if (!result || result.affectedRows === 0) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'User not found',
-			};
+			throw new CustomError('User not found');
 		}
 
 		return true;
@@ -572,16 +460,12 @@ const userService = {
 		// validate fields
 		const validationResult = this.validate(user);
 
-		if (validationResult !== true)
-			throw { code: constants.CUSTOM_ERROR_CODE, message: validationResult };
+		if (validationResult !== true) throw new CustomError(validationResult);
 
 		const result = await repository.update(user_id, user);
 
 		if (!result || result.affectedRows === 0) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Errors ocurred or user not found',
-			};
+			throw new CustomError('Errors ocurred or user not found');
 		}
 
 		return repository.getById(user_id, uiFields);
