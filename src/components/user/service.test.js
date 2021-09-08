@@ -29,4 +29,42 @@ test('login, successfull', async () => {
 	);
 });
 
-//
+// recover
+
+test('recover, empty email', async () => {
+	await expect(service.recover()).rejects.toThrow('Email address is required');
+});
+
+test('recover, email does not exists', async () => {
+	await expect(service.recover('aaaaaa')).rejects.toThrow(
+		'Wrong email address'
+	);
+});
+
+// verifyLink
+
+test('verifyLink, empty link', async () => {
+	await expect(service.verifyLink()).rejects.toThrow('Wrong link');
+});
+
+test('verifyLink, link does not exists', async () => {
+	await expect(service.verifyLink('sdsdf')).rejects.toThrow('Wrong link');
+});
+
+test('verifyLink, link expired', async () => {
+	await expect(
+		service.verifyLink(
+			'd8f82e1348272132755666077319cbd41140beb238b6449d5e3e2164d9349587'
+		)
+	).rejects.toThrow('Link expired');
+});
+
+// test('verifyLink, success', async () => {
+// 	await expect(
+// 		service.verifyLink(
+// 			'2edc809ab3c0a53524abe947f882a2661d4947e4c035c1d7818325b766c7e245'
+// 		)
+// 	).resolves.toHaveProperty('username');
+// });
+
+// resetpwd

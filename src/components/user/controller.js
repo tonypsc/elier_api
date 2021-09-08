@@ -20,8 +20,7 @@ const userController = {
 			res.json({ status: 'success', user: result, token });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -31,8 +30,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -45,8 +43,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -57,8 +54,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -70,8 +66,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -83,8 +78,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -142,8 +136,7 @@ const userController = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -157,8 +150,7 @@ const userController = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -169,8 +161,7 @@ const userController = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -181,8 +172,7 @@ const userController = {
 			res.json({ status: 'success', data: items });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -192,8 +182,7 @@ const userController = {
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -235,8 +224,7 @@ const userController = {
 			res.json({ status: 'success', data: user });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -246,8 +234,7 @@ const userController = {
 			res.json({ status: 'success', data: user });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 };

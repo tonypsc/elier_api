@@ -70,9 +70,7 @@ const userService = {
 	 */
 	async recover(emailAddress) {
 		//Check email exists
-		if (!emailAddress) {
-			throw new CustomError('Email address is required');
-		}
+		if (!emailAddress) throw new CustomError('Email address is required');
 
 		const user = await repository.getOne({ email: emailAddress });
 
@@ -386,7 +384,7 @@ const userService = {
 		if (search) {
 			search = `%${search}%`;
 			fullSearch = 'username LIKE ? OR fullname LIKE ? OR email LIKE ?';
-			searchValues = [search, search, search];
+			searchValues = new Array(3).fill(search);
 		}
 
 		const total = await repository.countEx(fullSearch, searchValues);

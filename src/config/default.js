@@ -7,4 +7,5 @@ module.exports = {
 	PAGE_SIZE: 10, // records per page default
 	BASE_URL: 'http://api.elier.org/',
 	CONFIRMATION_EXPIRES: 72, // hours till confirmation link expires
+	CONTACT_EMAIL: 'service@elier.org',
 };

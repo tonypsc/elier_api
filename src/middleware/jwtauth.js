@@ -17,6 +17,7 @@ module.exports = {
 			'/register',
 			'/confirmregister',
 			'/resendconfirmation',
+			'/contactmessages/new',
 		];
 
 		for (const path of excludedPaths) {

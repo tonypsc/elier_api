@@ -8,8 +8,7 @@ const controller = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -20,8 +19,7 @@ const controller = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -31,8 +29,7 @@ const controller = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 
@@ -42,8 +39,7 @@ const controller = {
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
-			res.status(400);
-			res.json({ status: 'error', errors: errors });
+			res.status(400).json({ status: 'error', errors: errors });
 		}
 	},
 };

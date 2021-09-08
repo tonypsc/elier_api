@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const config = require('../config/default');
 const constants = require('../constants/index');
+const CustomError = require('../error/CustomError');
 
 // async..await is not allowed in global scope, must use a wrapper
 
@@ -30,10 +31,7 @@ const mailer = {
 			await transporter.sendMail(mailOptions);
 			return true;
 		} catch (error) {
-			throw {
-				code: constants.CUSTOM_ERROR_CODE,
-				message: 'Mail system error. ' + error.message,
-			};
+			throw new CustomError('Mail system error. ' + error.message);
 		}
 
 		// const info = await transporter.sendMail(mailOptions);
