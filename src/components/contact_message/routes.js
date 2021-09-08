@@ -4,6 +4,6 @@ const controller = require('./controller');
 const router = express.Router();
 
 router.get('/', controller.get);
-router.post('/new', controller.add);
+router.post('/newmessage', controller.add);
 
 module.exports = router;
