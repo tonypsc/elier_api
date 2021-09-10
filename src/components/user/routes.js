@@ -13,6 +13,7 @@ router.post('/register', controller.register);
 router.post('/resendconfirmation', controller.sendConfirmationLink); // resends confirmation link to user
 router.get('/confirmregister/:link', controller.confirmRegister);
 router.get('/', controller.get);
+router.get('/userexists', controller.exists);
 router.get('/:id', controller.getOne);
 router.patch('/', controller.update);
 router.delete('/:id', controller.delete);

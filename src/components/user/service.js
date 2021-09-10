@@ -506,6 +506,22 @@ const userService = {
 		if (errors.length > 0) return errors.join('\n');
 		return true;
 	},
+
+	/**
+	 * Returns true if username exists false otherwise
+	 * @param {string} username
+	 * @returns {boolean}
+	 */
+	async exists(username) {
+		if (!username) throw new CustomError('Wrong username');
+
+		const result = await repository.getOne(
+			{ username: username.toString() },
+			uiFields
+		);
+		if (!result) return false;
+		return true;
+	},
 };
 
 module.exports = userService;

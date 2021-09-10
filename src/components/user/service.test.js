@@ -68,3 +68,17 @@ test('verifyLink, link expired', async () => {
 // });
 
 // resetpwd
+
+// exists
+
+test('exists, empty user name, should return error', async () => {
+	await expect(service.exists()).rejects.toThrow('Wrong username');
+});
+
+test('exists, unexisting username, should return false', async () => {
+	await expect(service.exists('----')).resolves.toBe(false);
+});
+
+test('exists, existing username, should return true', async () => {
+	await expect(service.exists('tony')).resolves.toBe(true);
+});

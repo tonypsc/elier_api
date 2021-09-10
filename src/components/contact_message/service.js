@@ -30,11 +30,11 @@ const service = {
 		if (!message) throw new CustomError('Wrong message');
 
 		// send email
-		await mailer.sendMail(
-			config.CONTACT_EMAIL,
-			'elier.org, New contact message',
-			`Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Created:${new Date().toString()}<br><br>Message: ${message}<br>`
-		);
+		// await mailer.sendMail(
+		// 	config.CONTACT_EMAIL,
+		// 	'elier.org, New contact message',
+		// 	`Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Created:${new Date().toString()}<br><br>Message: ${message}<br>`
+		// );
 
 		// persist record
 		const message_id = repository.getUUID();
