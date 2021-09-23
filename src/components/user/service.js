@@ -13,7 +13,7 @@ const uiFields = [
 	'email',
 	'photo',
 	'status',
-	'rol_id',
+	'role_id',
 	'theme',
 	'logged_in',
 	'language',
@@ -232,7 +232,7 @@ const userService = {
 			...user,
 			user_id,
 			pass: hashedPwd,
-			rol_id: 'user',
+			role_id: 'user',
 			created_on: new Date().getTime(),
 			status: UNCONFIRMED,
 			confirmation_link,
@@ -275,7 +275,7 @@ const userService = {
 		const result = await repository.update(user.user_id, user);
 
 		if (!result || result.affectedRows === 0) {
-			throw new CustomError('Unexpected errors ocurred');
+			throw new CustomError('Unexpected errors occurred');
 		}
 
 		// send email
@@ -315,7 +315,7 @@ const userService = {
 		const result = await repository.update(user.user_id, user);
 
 		if (!result || result.affectedRows === 0) {
-			throw new CustomError('Unexpected errors ocurred');
+			throw new CustomError('Unexpected errors occurred');
 		}
 
 		return repository.getById(user.user_id, uiFields);
@@ -329,10 +329,10 @@ const userService = {
 	 * @param {string} password the confirmation of password
 	 * @param {string} email
 	 * @param {string[]} photo
-	 * @param {string} rol_id
+	 * @param {string} roe_id
 	 * @returns {promise} with the inserted object
 	 */
-	async insert(username, fullname, password, confirm, email, photo, rol_id) {
+	async insert(username, fullname, password, confirm, email, photo, role_id) {
 		// validate fields
 		const validationResult = this.validate(
 			{
@@ -360,7 +360,7 @@ const userService = {
 			pass: hashedPwd,
 			email,
 			photo,
-			rol_id,
+			role_id,
 			created_on: new Date().getTime(),
 		};
 
@@ -439,17 +439,28 @@ const userService = {
 	 * @param {string} username
 	 * @param {string} fullname
 	 * @param {string} email
-	 * @param {string} rol_id
+	 * @param {string} role_id
 	 * @param {string} photo
 	 * @param {boolean} status
 	 * @returns
 	 */
-	async update(user_id, username, fullname, email, rol_id, photo, status) {
+	async update(
+		user_id,
+		username,
+		fullname,
+		email,
+		role_id,
+		photo,
+		status,
+		authUserRole
+	) {
+		if (authUserRole != 'admin') throw new CustomeError('Permision denied');
+
 		const user = {
 			username,
 			fullname,
 			email,
-			rol_id,
+			role_id,
 			photo,
 		};
 
@@ -462,11 +473,43 @@ const userService = {
 
 		const result = await repository.update(user_id, user);
 
-		if (!result || result.affectedRows === 0) {
-			throw new CustomError('Errors ocurred or user not found');
-		}
+		if (!result || result.affectedRows === 0)
+			throw new CustomError('Errors occurred or user not found');
 
 		return repository.getById(user_id, uiFields);
+	},
+
+	/**
+	 * Updates the profile info for the user
+	 * @param {string} user_id
+	 * @param {string} username
+	 * @param {string} fullname
+	 * @param {string} email
+	 * @param {string} photo
+	 * @param {string} authUserId // id of the authenticated user
+	 * @returns {object} user new data
+	 */
+	async updateProfile(user_id, username, fullname, email, photo, authUserId) {
+		if (!user_id) throw new CustomError('Wrong user_id');
+		if (user_id !== authUserId) throw new CustomError('Permision denied');
+
+		const user = {
+			username,
+			fullname,
+			email,
+			photo,
+		};
+
+		// validate
+		const validationResult = this.validate(user, false);
+		if (validationResult !== true) throw new CustomError(validationResult);
+
+		const result = await repository.update(user_id, user);
+
+		if (!result || result.affectedRows !== 1)
+			throw new CustomError('Unexpected errors occurred');
+
+		return { ...user, user_id };
 	},
 
 	/**
@@ -483,15 +526,21 @@ const userService = {
 		if (!user.username || user.username.length > 40 || user.username < 2)
 			errors.push('User name (2-40 chars)');
 
-		// if (!user.fullname || user.fullname.length > 80 || user.fullname < 2)
-		// 	errors.push('Full name (2-80 chars)');
+		// validate fullname only if provided
+		if (user.fullname && (user.fullname.length > 80 || user.fullname < 2))
+			errors.push('Full name (2-80 chars)');
 
 		if (
 			!user.email ||
 			//eslint-disable-next-line
-			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(user.email)
+			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(user.email) ||
+			user.email.length > 191
 		)
 			errors.push('Invalid email address');
+
+		// validate photo only if provided
+		if (user.photo && (user.photo.length > 80 || user.fullname < 3))
+			errors.push('Photo name (3-80 chars)');
 
 		if (validatePassword) {
 			if (!user.pass || !user.confirm) {

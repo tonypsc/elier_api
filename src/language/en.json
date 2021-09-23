@@ -1,0 +1,6 @@
+{
+	"registerSubject": "Confirm registration",
+	"registerText": "You have successfully registered in elier.org, click the link below to complete the registration process",
+	"registerExpireText": "This link expires in 72 hours",
+	"registerLink": "Confirm registration"
+}

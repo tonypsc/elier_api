@@ -23,7 +23,7 @@ const controller = {
 		}
 	},
 
-	async marckRead(req, res) {
+	async markRead(req, res) {
 		try {
 			const result = await service.markRead(req.params.id);
 			res.json({ status: 'success', data: result });
@@ -33,7 +33,7 @@ const controller = {
 		}
 	},
 
-	async marckReadUser(req, res) {
+	async markReadUser(req, res) {
 		try {
 			const result = await service.markAllUser(req.params.id);
 			res.json({ status: 'success', data: result });

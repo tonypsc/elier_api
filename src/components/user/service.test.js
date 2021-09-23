@@ -82,3 +82,94 @@ test('exists, unexisting username, should return false', async () => {
 test('exists, existing username, should return true', async () => {
 	await expect(service.exists('tony')).resolves.toBe(true);
 });
+
+// updateProfile
+
+test('updateProfile, empty user_id, should throw', async () => {
+	await expect(service.updateProfile()).rejects.toThrow('Wrong user_id');
+});
+
+test('updateProfile, user_id differs authUserId, should throw', async () => {
+	await expect(
+		service.updateProfile('ssss', 'dd', 'dd', 'ss', 'ddd', '---')
+	).rejects.toThrow('Permision denied');
+});
+
+test('updateProfile, empty username, should throw', async () => {
+	await expect(
+		service.updateProfile('user1', null, 'dd', 'ss', 'ddd', 'user1')
+	).rejects.toThrow('User name (2-40 chars)');
+});
+
+test('updateProfile, username to long, should throw', async () => {
+	const testString = 'b'.repeat(200);
+	await expect(
+		service.updateProfile('user1', testString, 'dd', 'ss', 'ddd', 'user1')
+	).rejects.toThrow('User name (2-40 chars)');
+});
+
+test('updateProfile, fullname to long, should throw', async () => {
+	const testString = 'b'.repeat(81);
+	await expect(
+		service.updateProfile('user1', 'sss', testString, 'ss', 'ddd', 'user1')
+	).rejects.toThrow('Full name (2-80 chars)');
+});
+
+test('updateProfile, empty email, should throw', async () => {
+	await expect(
+		service.updateProfile('user1', 'dd', 'ss', null, 'ddd', 'user1')
+	).rejects.toThrow('Invalid email address');
+});
+
+test('updateProfile, wrong email, should throw', async () => {
+	await expect(
+		service.updateProfile('user1', 'dd', 'ss', 'ddd', 'ddd', 'user1')
+	).rejects.toThrow('Invalid email address');
+});
+
+test('updateProfile, email too long, should throw', async () => {
+	const testString = 'b'.repeat(200);
+	await expect(
+		service.updateProfile(
+			'user1',
+			'dd',
+			'ss',
+			testString + '@gg.com',
+			'ddd',
+			'user1'
+		)
+	).rejects.toThrow('Invalid email address');
+});
+
+test('updateProfile, photo to long, should throw', async () => {
+	const testString = 'b'.repeat(81);
+	await expect(
+		service.updateProfile('user1', 'sss', 'dd', 'ss', testString, 'user1')
+	).rejects.toThrow('Photo name (3-80 chars)');
+});
+
+test('updateProfile, user not found, should throw', async () => {
+	await expect(
+		service.updateProfile(
+			'user1',
+			'sss',
+			'ddd',
+			'testString@ss.com',
+			'foto',
+			'user1'
+		)
+	).rejects.toThrow('Unexpected errors occurred');
+});
+
+test('updateProfile, success, returns user', async () => {
+	await expect(
+		service.updateProfile(
+			'ksyp48ym202ec1a8bbc62a5979d44b2c',
+			'wed',
+			'profile',
+			'teststring@ss.com',
+			'foto',
+			'ksyp48ym202ec1a8bbc62a5979d44b2c'
+		)
+	).resolves.toHaveProperty('username');
+});
