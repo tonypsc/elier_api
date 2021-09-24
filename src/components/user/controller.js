@@ -5,7 +5,6 @@ const formidable = require('formidable');
 const path = require('path');
 const fileHelper = require('../../utils/fileHelper');
 const fs = require('fs');
-const { updateProfile } = require('./service');
 
 const userController = {
 	async login(req, res) {
@@ -158,8 +157,6 @@ const userController = {
 				});
 
 			let uniqueFileName = null;
-
-			// Rename file
 			if (photo) {
 				uniqueFileName = fileHelper.getUniqueName(
 					path.resolve('./uploads/'),
@@ -176,7 +173,8 @@ const userController = {
 				role_id,
 				uniqueFileName,
 				status,
-				req.user.role_id
+				req.user.role_id,
+				req.user.user_id
 			);
 			res.json({ status: 'success', data: user });
 		} catch (error) {
@@ -199,7 +197,7 @@ const userController = {
 		try {
 			const form = new formidable.IncomingForm();
 
-			const { user_id, username, fullname, email, photo } = await new Promise(
+			const { username, fullname, email, photo } = await new Promise(
 				(resolve, reject) => {
 					form.parse(req, async function (err, fields, files) {
 						if (err) {
@@ -212,8 +210,6 @@ const userController = {
 			);
 
 			let uniqueFileName = null;
-
-			// Rename file
 			if (photo) {
 				uniqueFileName = fileHelper.getUniqueName(
 					path.resolve('./uploads/'),
@@ -222,16 +218,52 @@ const userController = {
 				fs.renameSync(photo.path, path.resolve('./uploads/' + uniqueFileName));
 			}
 
+			console.log(uniqueFileName);
+
 			const user = await service.update(
-				user_id,
+				req.user.user_id,
 				username,
 				fullname,
 				email,
+				undefined, // role_id
 				uniqueFileName,
+				undefined, // status
+				req.user.role_id,
 				req.user.user_id
 			);
 
 			res.json({ status: 'success', data: user });
+		} catch (error) {
+			const errors = errorHandling.processError(error);
+			res.status(400).json({ status: 'error', errors: errors });
+		}
+	},
+
+	async updatePhoto(req, res) {
+		try {
+			const form = new formidable.IncomingForm();
+
+			const { photo } = await new Promise((resolve, reject) => {
+				form.parse(req, async function (err, fields, files) {
+					if (err) {
+						reject(err);
+						return;
+					}
+					resolve({ photo: files.photo });
+				});
+			});
+
+			let uniqueFileName = null;
+			if (photo) {
+				uniqueFileName = fileHelper.getUniqueName(
+					path.resolve('./uploads/'),
+					photo.name
+				);
+				fs.renameSync(photo.path, path.resolve('./uploads/' + uniqueFileName));
+			}
+
+			await service.updatePhoto(req.user.user_id, uniqueFileName);
+			res.json({ status: 'success', data: uniqueFileName });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
 			res.status(400).json({ status: 'error', errors: errors });

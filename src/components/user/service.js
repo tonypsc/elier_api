@@ -452,18 +452,20 @@ const userService = {
 		role_id,
 		photo,
 		status,
-		authUserRole
+		authUserRole,
+		authUserId
 	) {
-		if (authUserRole != 'admin') throw new CustomeError('Permision denied');
+		if (authUserRole != 'admin' && user_id !== authUserId)
+			throw new CustomError('Permision denied');
 
 		const user = {
 			username,
 			fullname,
 			email,
-			role_id,
 			photo,
 		};
 
+		if (role_id !== undefined) user.role_id = role_id;
 		if (status !== undefined) user.status = status;
 
 		// validate fields
@@ -510,6 +512,27 @@ const userService = {
 			throw new CustomError('Unexpected errors occurred');
 
 		return { ...user, user_id };
+	},
+
+	/**
+	 * Updates the photo for the user
+	 * @param {string} user_id
+	 * @param {string} photo
+	 * @param {string} authUserId // id of the authenticated user
+	 * @returns {object} user new data
+	 */
+	async updatePhoto(user_id, photo) {
+		if (!user_id) throw new CustomError('Wrong user_id');
+		if (!photo) throw new CustomError('Wrong photo');
+
+		const user = { photo };
+
+		const result = await repository.update(user_id, user);
+
+		if (!result || result.affectedRows !== 1)
+			throw new CustomError('Unexpected errors occurred');
+
+		return true;
 	},
 
 	/**

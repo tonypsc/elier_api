@@ -526,3 +526,105 @@ fullSearch is not defined
 Cannot set headers after they are sent to the client
 						
 ==========================================
+2021-9
+						-24 10
+						:38:56
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 10
+						:43:17
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 10
+						:43:47
+renameFile is not defined
+						
+==========================================
+2021-9
+						-24 10
+						:44:20
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 10
+						:48:58
+CustomeError is not defined
+						
+==========================================
+2021-9
+						-24 10
+						:49:43
+Cannot add or update a child row: a foreign key constraint fails (`elier`.`user`, CONSTRAINT `user_fk_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON UPDATE CASCADE)
+						
+==========================================
+2021-9
+						-24 11
+						:10:49
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:11:51
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:12:34
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:14:4
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:19:5
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:19:51
+this.renameFile is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:20:42
+this.renameFileMia is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:21:55
+this.renameFileMia is not a function
+						
+==========================================
+2021-9
+						-24 11
+						:22:11
+uniqueFileName is not defined
+						
+==========================================
+2021-9
+						-24 11
+						:35:58
+Assignment to constant variable.
+						
+==========================================
+2021-9
+						-24 11
+						:39:5
+user_id is not defined
+						
+==========================================

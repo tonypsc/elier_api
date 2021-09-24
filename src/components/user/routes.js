@@ -17,6 +17,7 @@ router.get('/userexists', controller.exists);
 router.get('/:id', controller.getOne);
 router.patch('/', controller.update);
 router.patch('/profile', controller.updateProfile);
+router.patch('/photo', controller.updatePhoto);
 router.delete('/:id', controller.delete);
 
 module.exports = router;
