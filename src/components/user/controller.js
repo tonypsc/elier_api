@@ -26,7 +26,7 @@ const userController = {
 
 	async recover(req, res) {
 		try {
-			await service.recover(req.body.email);
+			await service.recover(req.body.email, req.body.language);
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -84,9 +84,15 @@ const userController = {
 
 	async register(req, res) {
 		try {
-			const { fullname, password, confirm, email } = req.body;
+			const { fullname, password, confirm, email, language } = req.body;
 
-			const result = await service.register(fullname, email, password, confirm);
+			const result = await service.register(
+				fullname,
+				email,
+				password,
+				confirm,
+				language
+			);
 
 			res.json({ status: 'success', data: result });
 		} catch (error) {
@@ -100,7 +106,10 @@ const userController = {
 	 */
 	async sendConfirmationLink(req, res) {
 		try {
-			const result = await service.sendConfirmationLink(req.body.email);
+			const result = await service.sendConfirmationLink(
+				req.body.email,
+				req.body.language
+			);
 
 			res.json({ status: 'success', data: result });
 		} catch (error) {

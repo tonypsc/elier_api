@@ -69,7 +69,7 @@ const userService = {
 	 * @param {string} emailAddress
 	 * @returns {promise}
 	 */
-	async recover(emailAddress) {
+	async recover(emailAddress, lang = 'EN') {
 		//Check email exists
 		if (!emailAddress) throw new CustomError('Email address is required');
 
@@ -90,10 +90,13 @@ const userService = {
 		// send the email
 		return mailer.sendMail(
 			emailAddress,
-			'elier.org, Password recovery link',
-			`You have requested to recover your password, click link to continue<br/>
-						"This link expires in 24 hours"<br/>
-						<a href="http://elier.org/${link}">Recover password</a>`
+			`elier.org, ${language.translate(lang, 'recoverSubject')}`,
+			`${language.translate(lang, 'recoverText')}<br/>
+						${language.translate(lang, 'recoverExpireText')}<br/>
+						<a href="${config.SITE_URL}/${link}">${language.translate(
+				lang,
+				'recoverLink'
+			)}</a>`
 		);
 	},
 
@@ -208,13 +211,14 @@ const userService = {
 	 * @param {string} confirm
 	 * @returns
 	 */
-	async register(fullname, email, pass, confirm) {
+	async register(fullname, email, pass, confirm, lang = 'EN') {
 		let user = {
 			username: email,
 			fullname: fullname || email,
 			pass,
 			confirm,
 			email,
+			lang,
 		};
 
 		// validate fields
@@ -245,10 +249,13 @@ const userService = {
 
 		await mailer.sendMail(
 			email,
-			'elier.org, Confirm registration',
-			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
-						"This link expires in 72 hours"<br/>
-						<a href="http://elier.org/${confirmation_link}"><h3>Confirm registration</h3></a>`
+			`elier.org, ${language.translate(lang, 'registerSubject')}`,
+			`${language.translate(lang, 'registerText')}<br/>
+						${language.translate(lang, 'registerExpireText')}<br/>
+						<a href="${config.SITE_URL}/${confirmation_link}"><h3>${language.translate(
+				lang,
+				'registerLink'
+			)}</h3></a>`
 		);
 
 		return repository.getById(user_id, uiFields);
@@ -258,7 +265,7 @@ const userService = {
 	 * Sends the confirmation link to user
 	 * @param {string} email
 	 */
-	async sendConfirmationLink(email) {
+	async sendConfirmationLink(email, lang = 'EN') {
 		if (!email) throw new CustomError('Invalid email addresss');
 
 		// get the user
@@ -282,10 +289,13 @@ const userService = {
 		// send email
 		return mailer.sendMail(
 			email,
-			'elier.org, Confirm registration',
-			`You have successfully registered in elier.org, click the link below to complete the registration process<br/>
-			    "This link expires in 72 hours"<br/>
-			    <a href="http://elier.org/${confirmation_link}"><h3>Confirm registration</h3></a>`
+			`elier.org, ${language.translate(lang, 'confirmRegistrationSubject')}`,
+			`${language.translate(lang, 'confirmRegistrationText')}<br/>
+			    ${language.translate(lang, 'confirmRegistationExpires')}<br/>
+			    <a href="${config.SITE_URL}/${confirmation_link}"><h3>${language.translate(
+				lang,
+				'confirmRegistationLink'
+			)}</h3></a>`
 		);
 	},
 

@@ -8,4 +8,5 @@ module.exports = {
 	BASE_URL: 'http://api.elier.org/',
 	CONFIRMATION_EXPIRES: 72, // hours till confirmation link expires
 	CONTACT_EMAIL: 'service@elier.org',
+	SITE_URL: 'http://www.elier.org',
 };
