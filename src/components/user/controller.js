@@ -145,16 +145,24 @@ const userController = {
 		try {
 			const form = new formidable.IncomingForm();
 
-			const { user_id, username, fullname, email, photo, role_id, status } =
-				await new Promise((resolve, reject) => {
-					form.parse(req, async function (err, fields, files) {
-						if (err) {
-							reject(err);
-							return;
-						}
-						resolve({ ...fields, photo: files.photo });
-					});
+			const {
+				user_id,
+				username,
+				fullname,
+				email,
+				photo,
+				role_id,
+				status,
+				language,
+			} = await new Promise((resolve, reject) => {
+				form.parse(req, async function (err, fields, files) {
+					if (err) {
+						reject(err);
+						return;
+					}
+					resolve({ ...fields, photo: files.photo });
 				});
+			});
 
 			let uniqueFileName = null;
 			if (photo) {
@@ -173,6 +181,7 @@ const userController = {
 				role_id,
 				uniqueFileName,
 				status,
+				language,
 				req.user.role_id,
 				req.user.user_id
 			);
@@ -197,7 +206,7 @@ const userController = {
 		try {
 			const form = new formidable.IncomingForm();
 
-			const { username, fullname, email, photo } = await new Promise(
+			const { username, fullname, email, photo, language } = await new Promise(
 				(resolve, reject) => {
 					form.parse(req, async function (err, fields, files) {
 						if (err) {
@@ -220,15 +229,13 @@ const userController = {
 
 			console.log(uniqueFileName);
 
-			const user = await service.update(
+			const user = await service.updateProfile(
 				req.user.user_id,
 				username,
 				fullname,
 				email,
-				undefined, // role_id
 				uniqueFileName,
-				undefined, // status
-				req.user.role_id,
+				language,
 				req.user.user_id
 			);
 
@@ -264,6 +271,19 @@ const userController = {
 
 			await service.updatePhoto(req.user.user_id, uniqueFileName);
 			res.json({ status: 'success', data: uniqueFileName });
+		} catch (error) {
+			const errors = errorHandling.processError(error);
+			res.status(400).json({ status: 'error', errors: errors });
+		}
+	},
+
+	async updateLanguage(req, res) {
+		try {
+			const result = await service.updateLanguage(
+				req.user.user_id,
+				req.body.language
+			);
+			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
 			res.status(400).json({ status: 'error', errors: errors });

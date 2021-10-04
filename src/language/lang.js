@@ -1,9 +1,17 @@
 const lang = {
-	translate(language = 'en', key) {
+	definedLangs: ['EN', 'ES'], // list of defined languages
+
+	/**
+	 * Returns the string in the language needed
+	 * @param {string} language
+	 * @param {string} key
+	 * @returns {string}
+	 */
+	translate(language = 'EN', key) {
 		let resources;
 
 		try {
-			resources = require(`./${language}.json`);
+			resources = require(`./${language.toLowerCase()}.json`);
 		} catch {
 			resources = require(`./en.json`);
 		}

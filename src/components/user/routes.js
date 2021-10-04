@@ -18,6 +18,7 @@ router.get('/:id', controller.getOne);
 router.patch('/', controller.update);
 router.patch('/profile', controller.updateProfile);
 router.patch('/photo', controller.updatePhoto);
+router.patch('/language', controller.updateLanguage);
 router.delete('/:id', controller.delete);
 
 module.exports = router;

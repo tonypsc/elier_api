@@ -5,6 +5,7 @@ const dto = require('./dto');
 const mailer = require('../../services/mailer');
 const config = require('../../config/default');
 const CustomError = require('../../error/CustomError');
+const language = require('../../language/lang');
 
 const uiFields = [
 	'user_id',
@@ -452,6 +453,7 @@ const userService = {
 		role_id,
 		photo,
 		status,
+		language,
 		authUserRole,
 		authUserId
 	) {
@@ -463,6 +465,7 @@ const userService = {
 			fullname,
 			email,
 			photo,
+			language,
 		};
 
 		if (role_id !== undefined) user.role_id = role_id;
@@ -491,8 +494,19 @@ const userService = {
 	 * @param {string} authUserId // id of the authenticated user
 	 * @returns {object} user new data
 	 */
-	async updateProfile(user_id, username, fullname, email, photo, authUserId) {
+	async updateProfile(
+		user_id,
+		username,
+		fullname,
+		email,
+		photo,
+		language,
+		authUserId
+	) {
 		if (!user_id) throw new CustomError('Wrong user_id');
+
+		console.log(user_id, authUserId);
+
 		if (user_id !== authUserId) throw new CustomError('Permision denied');
 
 		const user = {
@@ -500,7 +514,10 @@ const userService = {
 			fullname,
 			email,
 			photo,
+			language,
 		};
+
+		console.log(user);
 
 		// validate
 		const validationResult = this.validate(user, false);
@@ -535,6 +552,22 @@ const userService = {
 		return true;
 	},
 
+	async updateLanguage(user_id, lang) {
+		if (!user_id) throw new CustomError('Wrong user_id');
+		if (!lang) throw new CustomError('Wrong language');
+		if (!language.definedLangs.includes(lang.toUpperCase()))
+			throw new CustomError('Language not defined');
+
+		const user = { language: lang };
+
+		const result = await repository.update(user_id, user);
+
+		if (!result || result.affectedRows !== 1)
+			throw new CustomError('Unexpected errors occurred');
+
+		return lang;
+	},
+
 	/**
 	 * Validates user data
 	 * @param {object} user
@@ -564,6 +597,10 @@ const userService = {
 		// validate photo only if provided
 		if (user.photo && (user.photo.length > 80 || user.fullname < 3))
 			errors.push('Photo name (3-80 chars)');
+
+		// validate language
+		if (!language.definedLangs.includes(user.language.toUpperCase()))
+			throw new CustomError('Language not defined');
 
 		if (validatePassword) {
 			if (!user.pass || !user.confirm) {

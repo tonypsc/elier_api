@@ -628,3 +628,33 @@ Assignment to constant variable.
 user_id is not defined
 						
 ==========================================
+2021-10
+						-4 10
+						:27:56
+Cannot read property 'user_id' of undefined
+						
+==========================================
+2021-10
+						-4 10
+						:29:12
+lang is not defined
+						
+==========================================
+2021-10
+						-4 10
+						:38:28
+Duplicate entry 'pepe-photo1' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-10
+						-4 10
+						:38:39
+Duplicate entry 'deref1@ddd.com' for key 'UNIQUE_EMAIL'
+						
+==========================================
+2021-10
+						-4 10
+						:45:33
+Cannot add or update a child row: a foreign key constraint fails (`elier`.`user`, CONSTRAINT `user_fk_language` FOREIGN KEY (`language`) REFERENCES `language` (`language_id`) ON UPDATE CASCADE)
+						
+==========================================
