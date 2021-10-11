@@ -2,5 +2,15 @@
 	"registerSubject": "Confirmar registro",
 	"registerText": "Usted se ha registrado correctamente en elier.org, haga click en el vinculo de abajo para completar el proceso.",
 	"registerExpireText": "Este vinculo expira en 72h",
-	"registerLink": "Confirmar registro"
+	"registerLink": "Confirmar registro",
+	"recoverSubject": "Password recovery link",
+	"recoverText": "You have requested to recover your password, click link to continue",
+	"recoverExpireText": "This link expires in 24 hours",
+	"recoverLink": "Recover password",
+	"confirmRegistrationSubject": "Confirm registration",
+	"confirmRegistrationText": "You have successfully registered in elier.org, click the link below to complete the registration process",
+	"confirmRegistrationExpires": "This link expires in 72 hours",
+	"confirmRegistrationLink": "Confirm registration",
+	"wellcomeSubject": "Wellcome to elier.org",
+	"wellcomeText": "Receive our most ?????????????????????????????"
 }

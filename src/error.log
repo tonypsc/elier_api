@@ -658,3 +658,27 @@ Duplicate entry 'deref1@ddd.com' for key 'UNIQUE_EMAIL'
 Cannot add or update a child row: a foreign key constraint fails (`elier`.`user`, CONSTRAINT `user_fk_language` FOREIGN KEY (`language`) REFERENCES `language` (`language_id`) ON UPDATE CASCADE)
 						
 ==========================================
+2021-10
+						-11 12
+						:1:40
+Cannot read properties of undefined (reading 'toUpperCase')
+						
+==========================================
+2021-10
+						-11 12
+						:2:38
+Cannot read properties of undefined (reading 'toUpperCase')
+						
+==========================================
+2021-10
+						-11 12
+						:4:35
+Duplicate entry 'capeelier12@gmail.com' for key 'UNIQUE_NAME'
+						
+==========================================
+2021-10
+						-11 12
+						:4:47
+Cannot add or update a child row: a foreign key constraint fails (`elier`.`user`, CONSTRAINT `user_fk_language` FOREIGN KEY (`language`) REFERENCES `language` (`language_id`) ON UPDATE CASCADE)
+						
+==========================================

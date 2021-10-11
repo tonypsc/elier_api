@@ -211,14 +211,16 @@ const userService = {
 	 * @param {string} confirm
 	 * @returns
 	 */
-	async register(fullname, email, pass, confirm, lang = 'EN') {
+	async register(fullname, email, pass, confirm, lang) {
+		lang = lang || 'EN';
+
 		let user = {
 			username: email,
 			fullname: fullname || email,
 			pass,
 			confirm,
 			email,
-			lang,
+			language: lang,
 		};
 
 		// validate fields
@@ -303,7 +305,7 @@ const userService = {
 	 * Marks user status as active
 	 * @param {string} link
 	 */
-	async confirmRegistation(link) {
+	async confirmRegistation(link, lang) {
 		if (!link) throw new CustomError('Invalid confirmation link');
 
 		const user = await repository.getOne({ confirmation_link: link });
@@ -324,6 +326,16 @@ const userService = {
 		// change user status
 		user.status = ACTIVE;
 		const result = await repository.update(user.user_id, user);
+
+		// if no language specified, use user language
+		lang = lang || user.language;
+
+		// send wellcome email
+		mailer.sendMail(
+			user.email,
+			language.translate(lang, 'wellcomeSubject'),
+			language.translate(lang, 'wellcomeText')
+		);
 
 		if (!result || result.affectedRows === 0) {
 			throw new CustomError('Unexpected errors occurred');

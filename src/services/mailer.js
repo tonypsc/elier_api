@@ -1,14 +1,13 @@
 const nodemailer = require('nodemailer');
 const config = require('../config/default');
-const constants = require('../constants/index');
 const CustomError = require('../error/CustomError');
 
-// async..await is not allowed in global scope, must use a wrapper
-
 const mailer = {
-	async sendMail(to, subject, text) {
-		// prevents sending mails in development environment
-		//if (process.env.NODE_ENV === 'development') return true;
+	async sendMail(to, subject = '', text = '') {
+		if (!to) throw new CustomError('Mail receiver is required.');
+
+		// if mails are active
+		if (!config.SEND_MAILS) return true;
 
 		const transporter = nodemailer.createTransport({
 			host: config.MAIL_HOST,

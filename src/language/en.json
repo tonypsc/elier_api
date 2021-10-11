@@ -10,5 +10,7 @@
 	"confirmRegistrationSubject": "Confirm registration",
 	"confirmRegistrationText": "You have successfully registered in elier.org, click the link below to complete the registration process",
 	"confirmRegistrationExpires": "This link expires in 72 hours",
-	"confirmRegistrationLink": "Confirm registration"
+	"confirmRegistrationLink": "Confirm registration",
+	"wellcomeSubject": "Wellcome to elier.org",
+	"wellcomeText": "Receive our most ?????????????????????????????"
 }

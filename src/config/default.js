@@ -1,4 +1,5 @@
 module.exports = {
+	SEND_MAILS: false, // activate this in production
 	MAIL_HOST: 'n3plcpnl0262.prod.ams3.secureserver.net',
 	MAIL_PORT: '465',
 	MAIL_USER: 'service@elier.org',
