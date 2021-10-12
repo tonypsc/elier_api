@@ -93,7 +93,7 @@ const userService = {
 			`elier.org, ${language.translate(lang, 'recoverSubject')}`,
 			`${language.translate(lang, 'recoverText')}<br/>
 						${language.translate(lang, 'recoverExpireText')}<br/>
-						<a href="${config.SITE_URL}/${link}">${language.translate(
+						<a href="${config.SITE_URL}/${lang}/recoverpwd/${link}">${language.translate(
 				lang,
 				'recoverLink'
 			)}</a>`
@@ -254,7 +254,9 @@ const userService = {
 			`elier.org, ${language.translate(lang, 'registerSubject')}`,
 			`${language.translate(lang, 'registerText')}<br/>
 						${language.translate(lang, 'registerExpireText')}<br/>
-						<a href="${config.SITE_URL}/${confirmation_link}"><h3>${language.translate(
+						<a href="${
+							config.SITE_URL
+						}/${lang}/confirmregister/${confirmation_link}"><h3>${language.translate(
 				lang,
 				'registerLink'
 			)}</h3></a>`

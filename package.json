@@ -2,8 +2,9 @@
 	"name": "elier_api",
 	"version": "1.0.0",
 	"description": "rest api for elier.org",
-	"main": "index.js",
+	"main": "src/bin/www.js",
 	"scripts": {
+		"start": "node src/bin/www.js",
 		"dev": "nodemon src/bin/www.js",
 		"test": "jest"
 	},
