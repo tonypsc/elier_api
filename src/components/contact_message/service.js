@@ -1,7 +1,7 @@
 const SharedRepository = require('../shared/SharedRepository');
 const CustomError = require('../../error/CustomError');
 const mailer = require('../../services/mailer');
-const config = require('../../config/default');
+const config = require('../../config');
 const ContactMessage = require('./model');
 
 const repository = new SharedRepository('contact_message', 'message_id');
@@ -15,14 +15,14 @@ const service = {
 	 * @param {string} message
 	 * @returns {promise}
 	 */
-	async add(email, name, phone, message) {
-		// validate
+	async add(email, name, phone, message, captcha) {
 		if (
 			!email ||
 			//eslint-disable-next-line
 			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) ||
 			email.length > 255
 		)
+			// validate
 			throw new CustomError('Wrong email address (5 - 255 chars)');
 
 		if (!name || name.length > 80) throw new CustomError('Name (1 - 80 chars)');
@@ -31,11 +31,11 @@ const service = {
 		if (!message) throw new CustomError('Wrong message');
 
 		// send email
-		// await mailer.sendMail(
-		// 	config.CONTACT_EMAIL,
-		// 	'elier.org, New contact message',
-		// 	`Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Created:${new Date().toString()}<br><br>Message: ${message}<br>`
-		// );
+		await mailer.sendMail(
+			config.CONTACT_EMAIL,
+			'elier.org, New contact message',
+			`Name: ${name}<br>Email: ${email}<br>Phone: ${phone}<br>Created:${new Date().toString()}<br><br>Message: ${message}<br>`
+		);
 
 		// persist record
 		const message_id = repository.getUUID();

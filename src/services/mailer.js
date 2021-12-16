@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const config = require('../config/default');
+const config = require('../config');
 const CustomError = require('../error/CustomError');
 
 const mailer = {

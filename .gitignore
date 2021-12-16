@@ -4,3 +4,4 @@ uploads
 temp
 .prettierrc
 .eslintrc.json
+*.env

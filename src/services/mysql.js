@@ -1,13 +1,14 @@
 const mysql = require('mysql2');
+const config = require('../config');
 
 function connection() {
 	try {
 		const dbSettings = {
 			debug: false,
-			host: '127.0.0.1',
-			user: 'root',
-			password: 'root',
-			database: 'elier',
+			host: config.DB_HOST,
+			user: config.DB_USER,
+			password: config.DB_PASS,
+			database: config.DB_NAME,
 			connectionLimit: 10,
 			waitForConnections: true,
 			queueLimit: 0,
@@ -23,7 +24,7 @@ const pool = connection();
 
 module.exports = {
 	query: async (...params) => {
-		// try {
+		//try {
 		const connection = await pool.getConnection();
 		const [data, e] = await connection.query(...params);
 		await connection.release();
