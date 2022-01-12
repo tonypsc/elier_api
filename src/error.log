@@ -682,3 +682,33 @@ Duplicate entry 'capeelier12@gmail.com' for key 'UNIQUE_NAME'
 Cannot add or update a child row: a foreign key constraint fails (`elier`.`user`, CONSTRAINT `user_fk_language` FOREIGN KEY (`language`) REFERENCES `language` (`language_id`) ON UPDATE CASCADE)
 						
 ==========================================
+2021-12
+						-23 9
+						:6:43
+this.getIpAddress is not a function
+						
+==========================================
+2021-12
+						-23 9
+						:8:1
+getIpAddress is not defined
+						
+==========================================
+2021-12
+						-23 9
+						:8:58
+this.getIpAddress is not a function
+						
+==========================================
+2021-12
+						-23 9
+						:28:36
+this.getIpAddress is not a function
+						
+==========================================
+2021-12
+						-23 9
+						:29:5
+req is not defined
+						
+==========================================

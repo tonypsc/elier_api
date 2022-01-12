@@ -8,9 +8,18 @@ const fs = require('fs');
 
 const userController = {
 	async login(req, res) {
+		// captcha protected
+
 		try {
 			const { username, pwd } = req.body;
-			const result = await service.login(username, pwd);
+
+			const captcha = req.body['g-recaptcha-response'];
+			const result = await service.login(
+				username,
+				pwd,
+				captcha,
+				userController.getIpAddress(req)
+			);
 
 			const token = jwt.generateToken({
 				user_id: result.user_id,
@@ -25,8 +34,15 @@ const userController = {
 	},
 
 	async recover(req, res) {
+		// captcha protected
 		try {
-			await service.recover(req.body.email, req.body.language);
+			const captcha = req.body['g-recaptcha-response'];
+			await service.recover(
+				req.body.email,
+				req.body.language,
+				captcha,
+				userController.getIpAddress(req)
+			);
 			res.json({ status: 'success' });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -83,15 +99,19 @@ const userController = {
 	},
 
 	async register(req, res) {
+		// captcha protected
 		try {
 			const { fullname, password, confirm, email, language } = req.body;
+			const captcha = req.body['g-recaptcha-response'];
 
 			const result = await service.register(
 				fullname,
 				email,
 				password,
 				confirm,
-				language
+				language,
+				captcha,
+				userController.getIpAddress(req)
 			);
 
 			res.json({ status: 'success', data: result });
@@ -307,6 +327,10 @@ const userController = {
 			const errors = errorHandling.processError(error);
 			res.status(400).json({ status: 'error', errors: errors });
 		}
+	},
+
+	getIpAddress(req) {
+		return req.connection.remoteAddress.split(':').slice(-1)[0];
 	},
 };
 

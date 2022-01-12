@@ -1,21 +1,24 @@
 const config = require('../config');
 const fetch = require('node-fetch').default;
+const CustomError = require('../error/CustomError');
 
 const captcha = {
-	verify(captcha, remoteip) {
-		const verifyUrl = `https://google.com/recaptcha/api/verify?secret=${config.CAPTCHA_SECRET}&response=${captcha}&remoteip=${remoteip}`;
+	async verify(captcha, remoteip) {
+		if (!captcha) throw new CustomError('captcha empty');
 
-		fetch(verifyUrl)
-			.then((res) => res.json())
-			.then((data) => {
-				if (!data || !data.success)
-					return { status: 'error', message: 'Captcha failed' };
+		const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${config.CAPTCHA_SECRET}&response=${captcha}&remoteip=${remoteip}`;
 
-				return { status: 'success' };
-			})
-			.catch((err) => {
-				if (!res) return { status: 'error', message: 'Captcha failed' };
-			});
+		try {
+			const res = await fetch(verifyUrl);
+			const data = await res.json();
+
+			if (!data || !data.success) return false;
+
+			return true;
+		} catch (err) {
+			console.log(err);
+			return false;
+		}
 	},
 };
 

@@ -1,6 +1,5 @@
 const errorHandling = require('../../error/errorHandling');
 const service = require('./service');
-const captchaService = require('../../services/captcha');
 
 const controller = {
 	/**
@@ -8,19 +7,17 @@ const controller = {
 	 */
 	async add(req, res) {
 		try {
-			const { email, name, phone, message, captcha } = req.body;
+			const { email, name, phone, message } = req.body;
+			const captcha = req.body['g-recaptcha-response'];
 
-			// verify captcha
-			const captchaResult = captchaService.verify(
+			const result = await service.add(
+				email,
+				name,
+				phone,
+				message,
 				captcha,
-				req.connection.remoteAddress
+				req.connection.remoteAddress.split(':').slice(-1)[0]
 			);
-			if (captchaResult.status !== 'success') {
-				res.json(captchaResult);
-				return;
-			}
-
-			const result = await service.add(email, name, phone, message);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);

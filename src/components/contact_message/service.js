@@ -3,6 +3,7 @@ const CustomError = require('../../error/CustomError');
 const mailer = require('../../services/mailer');
 const config = require('../../config');
 const ContactMessage = require('./model');
+const captchaService = require('../../services/captcha');
 
 const repository = new SharedRepository('contact_message', 'message_id');
 
@@ -13,9 +14,11 @@ const service = {
 	 * @param {string} name
 	 * @param {string} phone
 	 * @param {string} message
+	 * @param {string} captcha
+	 * @param {string} remoteip
 	 * @returns {promise}
 	 */
-	async add(email, name, phone, message, captcha) {
+	async add(email, name, phone, message, captcha, remoteip) {
 		if (
 			!email ||
 			//eslint-disable-next-line
@@ -29,6 +32,10 @@ const service = {
 		if (phone && phone.length > 40)
 			throw new CustomError('Phone (0 - 40 chars)');
 		if (!message) throw new CustomError('Wrong message');
+
+		// check captcha
+		const captchaResult = await captchaService.verify(captcha, remoteip);
+		if (!captchaResult) throw new CustomError('Captcha failed');
 
 		// send email
 		await mailer.sendMail(

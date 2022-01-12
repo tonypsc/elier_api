@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const SharedRepository = require('../shared/SharedRepository');
 const dto = require('./dto');
@@ -6,6 +6,7 @@ const mailer = require('../../services/mailer');
 const config = require('../../config');
 const CustomError = require('../../error/CustomError');
 const language = require('../../language/lang');
+const captchaService = require('../../services/captcha');
 
 const uiFields = [
 	'user_id',
@@ -33,8 +34,12 @@ const userService = {
 	 * @param {*} password
 	 * @returns {object} user data
 	 */
-	async login(userName, password) {
+	async login(userName, password, captcha, remoteip) {
 		if (!userName || !password) throw new CustomError('Wrong input data');
+
+		// check captcha
+		const captchaResult = await captchaService.verify(captcha, remoteip);
+		if (!captchaResult) throw new CustomError('Captcha failed');
 
 		const user = await repository.getOne({ username: userName });
 
@@ -69,9 +74,13 @@ const userService = {
 	 * @param {string} emailAddress
 	 * @returns {promise}
 	 */
-	async recover(emailAddress, lang = 'EN') {
+	async recover(emailAddress, lang = 'EN', captcha, remoteip) {
 		//Check email exists
 		if (!emailAddress) throw new CustomError('Email address is required');
+
+		// check captcha
+		const captchaResult = await captchaService.verify(captcha, remoteip);
+		if (!captchaResult) throw new CustomError('Captcha failed');
 
 		const user = await repository.getOne({ email: emailAddress });
 
@@ -211,8 +220,12 @@ const userService = {
 	 * @param {string} confirm
 	 * @returns
 	 */
-	async register(fullname, email, pass, confirm, lang) {
+	async register(fullname, email, pass, confirm, lang, captcha, remoteip) {
 		lang = lang || 'EN';
+
+		// check captcha
+		const captchaResult = await captchaService.verify(captcha, remoteip);
+		if (!captchaResult) throw new CustomError('Captcha failed');
 
 		let user = {
 			username: email,
