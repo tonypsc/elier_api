@@ -16,4 +16,5 @@ module.exports = {
 	DB_PASS: process.env.DB_PASS,
 	DB_NAME: process.env.DB_NAME,
 	CAPTCHA_SECRET: process.env.CAPTCHA_SECRET,
+	GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
 };

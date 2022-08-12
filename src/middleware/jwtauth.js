@@ -19,6 +19,7 @@ module.exports = {
 			'/resendconfirmation',
 			'/newmessage',
 			'/userexists',
+			'/searchyoutube',
 		];
 
 		for (const path of excludedPaths) {
