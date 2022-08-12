@@ -12,5 +12,5 @@
 	"confirmRegistrationExpires": "This link expires in 72 hours",
 	"confirmRegistrationLink": "Confirm registration",
 	"wellcomeSubject": "Welcome to elier.org",
-	"wellcomeText": "<p>Thank you for registering with us</p><p>Your new account gives you access to many important features on our service, including:</p><ul><li>Create content, view and share content in<a href='poetry.elier.org'>poetry.elier.org</a>,<a href='sing.elier.org'>sing.elier.org</a></li></ul>"
+	"wellcomeText": "<p>Thank you for registering with us</p><p>Your new account gives you access to many important features on our service, including:</p><ul><li>Create content, view and share content in <a href='poetry.elier.org'>poetry.elier.org</a>, <a href='sing.elier.org'>sing.elier.org</a></li></ul>"
 }

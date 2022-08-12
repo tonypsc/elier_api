@@ -7,12 +7,12 @@ const cors = require('cors');
 
 // Initializations
 const app = express();
-// const pool = require('./src/services/mysql');
+const pool = require('./src/services/mysql');
 
-// pool.pool
-// 	.getConnection()
-// 	.then(() => console.log('connected ok'))
-// 	.catch((err) => console.log('errors ocurred'));
+pool.pool
+	.getConnection()
+	.then(() => console.log('connected ok'))
+	.catch((err) => console.log(err));
 
 // Middlewares
 app.use(cors());

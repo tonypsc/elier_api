@@ -16,7 +16,7 @@ router.all('*', (req, res) => {
 	res.sendStatus(404);
 });
 
-// this is needed for serving angular front as static
+// this is needed for serving front as static
 // router.all('*', (req, res) => {
 // 	res.sendFile(path.join(__dirname, '../../public/index.html'));
 // });
