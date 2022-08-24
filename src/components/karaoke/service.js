@@ -12,13 +12,18 @@ const service = {
 		const youtubeUrl =
 			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20&part=snippet&q=karaoke ';
 
-		try {
+		https: try {
 			const res = await fetch(
 				`${youtubeUrl}${search}&key=${config.GOOGLE_API_KEY}`
 			);
 			const data = await res.json();
-			console.log(data);
-			return data;
+
+			const result = data.items.map((res) => {
+				res.link = `www.youtube.com/watch?v=${res.id.videoId}`;
+				return res;
+			});
+
+			return result;
 		} catch (err) {
 			console.log(err);
 			return false;
