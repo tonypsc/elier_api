@@ -29,6 +29,27 @@ const service = {
 			return false;
 		}
 	},
+
+	// Calls daily API to get search results
+	async getDailyMotion(search) {
+		const youtubeUrl =
+			'https://api.dailymotion.com/videos?shorter_than=10&fields=id,title,thumbnail_url&search=karaoke ';
+
+		https: try {
+			const res = await fetch(`${youtubeUrl}${search}`);
+			const data = await res.json();
+
+			const result = data.list.map((res) => {
+				res.link = `https://www.dailymotion.com/video/${res.id}`;
+				return res;
+			});
+
+			return result;
+		} catch (err) {
+			console.log(err);
+			return false;
+		}
+	},
 };
 
 module.exports = service;

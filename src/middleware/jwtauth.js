@@ -20,6 +20,7 @@ module.exports = {
 			'/newmessage',
 			'/userexists',
 			'/searchyoutube',
+			'searchdailymotion',
 		];
 
 		for (const path of excludedPaths) {
