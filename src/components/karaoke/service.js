@@ -19,7 +19,7 @@ const service = {
 			const data = await res.json();
 
 			const result = data.items.map((res) => {
-				res.link = `www.youtube.com/watch?v=${res.id.videoId}`;
+				res.link = `https://www.youtube.com/watch?v=${res.id.videoId}`;
 				return res;
 			});
 
