@@ -14,7 +14,9 @@ const service = {
 
 		https: try {
 			const searchResponse = await fetch(
-				`${youtubeSearchUrl}${search}&key=${config.GOOGLE_API_KEY}`
+				search
+					? `${youtubeSearchUrl}${search}&key=${config.GOOGLE_API_KEY}`
+					: `${youtubeSearchUrl}&key=${config.GOOGLE_API_KEY}`
 			);
 
 			const searchData = await searchResponse.json();
@@ -46,7 +48,7 @@ const service = {
 				};
 			});
 
-			return result;
+			return videoData;
 		} catch (err) {
 			console.log(err);
 			return false;
