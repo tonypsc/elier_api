@@ -10,7 +10,7 @@ const service = {
 	// Calls youtube API to get search results
 	async getYoutube(search) {
 		const youtubeUrl =
-			'https://youtube.googleapis.com/youtube/v3/search?type=video&q=karaoke ';
+			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20&part=snippet&q=karaoke ';
 
 		try {
 			const res = await fetch(
