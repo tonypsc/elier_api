@@ -34,7 +34,7 @@ const service = {
 				res.link = `https://www.youtube.com/watch?v=${res.id.videoId}`;
 				return {
 					id: res.id,
-					link: `https://www.youtube.com/watch?v=${res.id.videoId}`,
+					link: `https://www.youtube.com/watch?v=${res.id}`,
 					thumbnail: res.snippet.thumbnail,
 					published: res.snippet.publishedAt,
 					title: res.snippet.title,
