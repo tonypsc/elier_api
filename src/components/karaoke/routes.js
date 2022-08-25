@@ -3,7 +3,6 @@ const controller = require('./controller');
 
 const router = express.Router();
 
-router.get('/searchyoutube', controller.getYoutube);
-router.get('/searchdailymotion', controller.getDailyMotion);
+router.get('/searchkaraokes', controller.getKaraokes);
 
 module.exports = router;

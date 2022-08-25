@@ -19,8 +19,7 @@ module.exports = {
 			'/resendconfirmation',
 			'/newmessage',
 			'/userexists',
-			'/searchyoutube',
-			'searchdailymotion',
+			'/searchkaraokes',
 		];
 
 		for (const path of excludedPaths) {

@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
+const stringSimilarity = require('string-similarity');
 
 const sharedRepository = require('../shared/SharedRepository');
-
 const config = require('../../config');
 
 const repository = new sharedRepository('karaoke', 'karaoke_id');
@@ -10,7 +10,7 @@ const service = {
 	// Calls youtube API to get search results
 	async getYoutube(search) {
 		const youtubeSearchUrl =
-			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20&q=karaoke';
+			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20&q="karaoke"';
 
 		https: try {
 			const searchResponse = await fetch(
@@ -49,20 +49,24 @@ const service = {
 					likes: parseInt(res.statistics.likeCount),
 					comments: parseInt(res.statistics.commentCount),
 					origin: 'youtube',
+					similarity: stringSimilarity.compareTwoStrings(
+						res.snippet.title.toLowerCase(),
+						`karaoke ${search.toLowerCase()}`
+					),
 				};
 			});
 
 			return result;
 		} catch (err) {
 			console.log(err);
-			return false;
+			return [];
 		}
 	},
 
 	// Calls dailyMotion API to get search results
 	async getDailyMotion(search) {
 		const dailyMotioneUrl =
-			'https://api.dailymotion.com/videos?shorter_than=10&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total&search=karaoke ';
+			'https://api.dailymotion.com/videos?shorter_than=10&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total&search="karaoke" ';
 
 		https: try {
 			const res = await fetch(
@@ -87,14 +91,25 @@ const service = {
 					likes: res.likes_total,
 					comments: 0,
 					origin: 'dailymotion',
+					similarity: stringSimilarity.compareTwoStrings(
+						res.title.toLowerCase(),
+						`karaoke ${search.toLowerCase()}`
+					),
 				};
 			});
 
 			return result;
 		} catch (err) {
 			console.log(err);
-			return false;
+			return [];
 		}
+	},
+	async getAll(search) {
+		const youtubeResults = await this.getYoutube(search);
+		const dailyMotionResults = await this.getDailyMotion(search);
+		const results = [...youtubeResults, ...dailyMotionResults];
+
+		return results.sort((a, b) => a.similarity - b.similarity);
 	},
 	youtubeDurationToSeconds(duration) {
 		const match = duration.match(

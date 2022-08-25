@@ -712,3 +712,15 @@ this.getIpAddress is not a function
 req is not defined
 						
 ==========================================
+2022-8
+						-25 11
+						:50:51
+first.replace is not a function
+						
+==========================================
+2022-8
+						-25 11
+						:52:51
+first.replace is not a function
+						
+==========================================
