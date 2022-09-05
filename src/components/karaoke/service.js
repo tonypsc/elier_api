@@ -116,6 +116,8 @@ const service = {
 
 		return results.sort((a, b) => a.similarity - b.similarity);
 	},
+
+	// Converts duration from youtube format to seconds
 	youtubeDurationToSeconds(duration) {
 		const match = duration.match(
 			/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/

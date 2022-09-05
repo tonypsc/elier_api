@@ -3,6 +3,6 @@ const controller = require('./controller');
 
 const router = express.Router();
 
-router.get('/search', controller.getKaraokes);
+router.post('/list', controller.createList);
 
 module.exports = router;
