@@ -8,16 +8,20 @@ const repository = new sharedRepository('karaoke', 'karaoke_id');
 
 const service = {
 	// Calls youtube API to get search results
-	async getYoutube(search) {
-		const youtubeSearchUrl =
-			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20&q="karaoke"';
+	async getYoutube(search = '', page = 1) {
+		let youtubeSearchUrl =
+			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20';
 
-		https: try {
-			const searchResponse = await fetch(
-				search
-					? `${youtubeSearchUrl} ${search}&key=${config.GOOGLE_API_KEY}`
-					: `${youtubeSearchUrl}&key=${config.GOOGLE_API_KEY}`
-			);
+		if (page !== 1) youtubeSearchUrl += '&pageToken=CBQQAA';
+
+		youtubeSearchUrl += '&q="karaoke" ';
+
+		if (search) youtubeSearchUrl += ` ${search}`;
+
+		youtubeSearchUrl += `&key=${config.GOOGLE_API_KEY}`;
+
+		try {
+			const searchResponse = await fetch(youtubeSearchUrl);
 
 			const searchData = await searchResponse.json();
 
@@ -64,11 +68,10 @@ const service = {
 	},
 
 	// Calls dailyMotion API to get search results
-	async getDailyMotion(search) {
-		const dailyMotioneUrl =
-			'https://api.dailymotion.com/videos?shorter_than=10&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total&search="karaoke" ';
+	async getDailyMotion(search = '', page = 1) {
+		const dailyMotioneUrl = `https://api.dailymotion.com/videos?shorter_than=10&limit=20&page=${page}&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total&search="karaoke" `;
 
-		https: try {
+		try {
 			const res = await fetch(
 				search ? `${dailyMotioneUrl}${search}` : dailyMotioneUrl
 			);
@@ -104,8 +107,10 @@ const service = {
 			return [];
 		}
 	},
-	async getAll(search) {
-		const youtubeResults = await this.getYoutube(search);
+	async getAll(search, page) {
+		if (!search) return [];
+
+		const youtubeResults = await this.getYoutube(search, page);
 		const dailyMotionResults = await this.getDailyMotion(search);
 		const results = [...youtubeResults, ...dailyMotionResults];
 

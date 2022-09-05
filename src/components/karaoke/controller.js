@@ -4,7 +4,7 @@ const errorHandling = require('../../error/errorHandling');
 const controller = {
 	async getKaraokes(req, res) {
 		try {
-			const result = await service.getAll(req.query.search);
+			const result = await service.getAll(req.query.search, req.query.page);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -12,27 +12,6 @@ const controller = {
 			res.json({ status: 'error', errors: errors });
 		}
 	},
-	// 	async getYoutube(req, res) {
-	// 		try {
-	// 			const result = await service.getAll(req.query.search);
-	// 			res.json({ status: 'success', data: result });
-	// 		} catch (error) {
-	// 			const errors = errorHandling.processError(error);
-	// 			res.status(400);
-	// 			res.json({ status: 'error', errors: errors });
-	// 		}
-	// 	},
-
-	// 	async getDailyMotion(req, res) {
-	// 		try {
-	// 			const result = await service.getDailyMotion(req.query.search);
-	// 			res.json({ status: 'success', data: result });
-	// 		} catch (error) {
-	// 			const errors = errorHandling.processError(error);
-	// 			res.status(400);
-	// 			res.json({ status: 'error', errors: errors });
-	// 		}
-	// 	},
 };
 
 module.exports = controller;
