@@ -9,7 +9,7 @@ const repository = new sharedRepository('list', 'list_id');
 const service = {
 	// Adds play list to lists table
 	addList(playListName) {
-		if (!playListName) throw new Error('Playlist name is required');
+		if (!playListName) throw new Error('List name is required');
 	},
 };
 
