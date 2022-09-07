@@ -5,9 +5,11 @@ const config = require('../../config');
 
 const repository = new sharedRepository('list', 'list_id');
 
+const uiFields = ['list_id', 'name'];
+
 const service = {
 	// Adds play list to lists table
-	async addList(user_id, app_id, listName) {
+	async add(user_id, app_id, listName) {
 		if (!user_id || !app_id) throw new CustomError('Invalid input data');
 		if (!listName || listName.toString().trim().length === 0)
 			throw new CustomError('List name is required');
@@ -23,6 +25,10 @@ const service = {
 		};
 
 		return repository.insert(newList);
+	},
+	async getAll(user_id, app_id) {
+		if (!user_id || !app_id) throw new CustomError('Invalid input data');
+		return repository.getAll({ user_id, app_id }, uiFields);
 	},
 };
 
