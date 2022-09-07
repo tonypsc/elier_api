@@ -4,8 +4,8 @@ const CustomError = require('../error/CustomError');
 
 const captcha = {
 	async verify(captcha, remoteip) {
-		// skipping captcha for testing
-		if (config.env === 'testing') return true;
+		// skipping captcha for testing or development
+		if (config.env === 'testing' || config.env === 'development') return true;
 		if (!captcha) throw new CustomError('captcha empty');
 
 		const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${config.CAPTCHA_SECRET}&response=${captcha}&remoteip=${remoteip}`;

@@ -19,7 +19,7 @@ module.exports = {
 			'/resendconfirmation',
 			'/newmessage',
 			'/userexists',
-			'/searchkaraokes',
+			'/search',
 		];
 
 		for (const path of excludedPaths) {

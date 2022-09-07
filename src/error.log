@@ -730,3 +730,15 @@ first.replace is not a function
 page is not defined
 						
 ==========================================
+2022-9
+						-7 14
+						:51:54
+Field 'created_at' doesn't have a default value
+						
+==========================================
+2022-9
+						-7 15
+						:1:46
+Duplicate entry 'adfasdf-karaoke-mia' for key 'list.unique_name'
+						
+==========================================
