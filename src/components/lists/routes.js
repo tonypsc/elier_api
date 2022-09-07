@@ -3,7 +3,7 @@ const controller = require('./controller');
 
 const router = express.Router();
 
-router.get('/', controller.createList);
+router.get('/', controller.getLists);
 router.post('/', controller.createList);
 
 module.exports = router;

@@ -16,6 +16,7 @@ const controller = {
 	},
 	async getLists(req, res) {
 		try {
+			console.log(req.query.user_id);
 			const result = await service.getAll(req.query.user_id, req.query.app_id);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
