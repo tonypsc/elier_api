@@ -27,7 +27,7 @@ test('add, empty message', async () => {
 
 test('add, success', async () => {
 	await expect(
-		service.add('pppw@ff.com', 'ddd', 'erer', 'algunwo')
+		service.add('pppw@ff.com', 'ddd', 'erer', 'algunwo', 'captcha')
 	).resolves.toHaveProperty('email');
 });
 

@@ -542,8 +542,6 @@ const userService = {
 	) {
 		if (!user_id) throw new CustomError('Wrong user_id');
 
-		console.log(user_id, authUserId);
-
 		if (user_id !== authUserId) throw new CustomError('Permision denied');
 
 		const user = {
@@ -553,8 +551,6 @@ const userService = {
 			photo,
 			language,
 		};
-
-		console.log(user);
 
 		// validate
 		const validationResult = this.validate(user, false);
