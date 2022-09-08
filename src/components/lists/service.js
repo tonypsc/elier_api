@@ -20,7 +20,7 @@ const service = {
 			list_id: repository.getUUID(),
 			user_id,
 			app_id,
-			name: listName,
+			name: listName.toString(),
 			created_at: new Date().getTime(),
 		};
 
