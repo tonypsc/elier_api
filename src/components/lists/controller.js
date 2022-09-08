@@ -14,10 +14,32 @@ const controller = {
 			res.json({ status: 'error', errors: errors });
 		}
 	},
+	// gets all lists for the user and the app
 	async getLists(req, res) {
 		try {
-			console.log(req.query.user_id);
 			const result = await service.getAll(req.query.user_id, req.query.app_id);
+			res.json({ status: 'success', data: result });
+		} catch (error) {
+			const errors = errorHandling.processError(error);
+			res.status(400);
+			res.json({ status: 'error', errors: errors });
+		}
+	},
+	// updates list name
+	async updateList(req, res) {
+		try {
+			const result = await service.update(req.body.list_id, req.body.name);
+			res.json({ status: 'success', data: result });
+		} catch (error) {
+			const errors = errorHandling.processError(error);
+			res.status(400);
+			res.json({ status: 'error', errors: errors });
+		}
+	},
+	// delete list
+	async deleteList(req, res) {
+		try {
+			const result = await service.delete(req.query.list_id);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);

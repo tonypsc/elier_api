@@ -39,3 +39,9 @@ describe('getAll', () => {
 		expect(result instanceof Array).toBeTruthy();
 	});
 });
+
+describe('update', () => {
+	test('getAll should throw error on empty user_id or app_id', async () => {
+		await expect(service.getAll()).rejects.toThrow('Invalid input data');
+	});
+});
