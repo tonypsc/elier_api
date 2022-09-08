@@ -13,7 +13,7 @@ const lang = {
 		try {
 			resources = require(`./${language.toLowerCase()}.json`);
 		} catch {
-			resources = require(`./en.json`);
+			resources = require('./en.json');
 		}
 
 		return resources[key] || '';

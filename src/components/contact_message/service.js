@@ -2,7 +2,6 @@ const SharedRepository = require('../shared/SharedRepository');
 const CustomError = require('../../error/CustomError');
 const mailer = require('../../services/mailer');
 const config = require('../../config');
-const ContactMessage = require('./model');
 const captchaService = require('../../services/captcha');
 
 const repository = new SharedRepository('contact_message', 'message_id');

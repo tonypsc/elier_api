@@ -1,7 +1,6 @@
 const CustomError = require('../../error/CustomError');
 
 const sharedRepository = require('../shared/SharedRepository');
-const config = require('../../config');
 
 const repository = new sharedRepository('list', 'list_id');
 

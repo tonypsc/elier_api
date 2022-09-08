@@ -1,4 +1,3 @@
-const DUPLICATE_MESSAGE = 'The data entered would create duplicate values.';
 const UNHANDLE_MESSAGE = 'Errors ocurred processing the request.';
 const fs = require('fs');
 const path = require('path');
@@ -11,6 +10,7 @@ const errorHandling = {
 
 		// mysql error
 		if (err.type === 'mysql') {
+			console.log('mysql error');
 		} else if (err instanceof CustomError) {
 			// custom errors
 			errorMessage = err.message;

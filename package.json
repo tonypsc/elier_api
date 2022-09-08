@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "ENV=production node src/bin/www.js",
 		"dev": "ENV=development nodemon src/bin/www.js",
-		"test": "ENV=testing jest"
+		"test": "ENV=testing jest",
+		"format": "prettier --write"
 	},
 	"author": "",
 	"license": "ISC",

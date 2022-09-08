@@ -26,7 +26,7 @@ module.exports = {
 	query: async (...params) => {
 		//try {
 		const connection = await pool.getConnection();
-		const [data, e] = await connection.query(...params);
+		const [data] = await connection.query(...params);
 		await connection.release();
 		return data;
 		// } catch (e) {
@@ -37,7 +37,7 @@ module.exports = {
 	execute: async (...params) => {
 		//try {
 		const connection = await pool.getConnection();
-		const [data, col] = await connection.execute(...params);
+		const [data] = await connection.execute(...params);
 		await connection.release();
 		return data;
 		// } catch (e) {

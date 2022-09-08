@@ -1,5 +1,4 @@
 const service = require('./service');
-const constants = require('../../constants/index');
 
 // LOGIN
 
