@@ -256,8 +256,6 @@ const userController = {
 				fs.renameSync(photo.path, path.resolve('./uploads/' + uniqueFileName));
 			}
 
-			console.log(uniqueFileName);
-
 			const user = await service.updateProfile(
 				req.user.user_id,
 				username,

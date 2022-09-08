@@ -56,4 +56,12 @@ describe('update', () => {
 			'List name is required'
 		);
 	});
+
+	test('update should return on success', async () => {
+		const result = await service.update(
+			'l7rzlg2z6c338607ef0b5149bae44b25',
+			'updated name'
+		);
+		expect(result.affectedRows).toBe(1);
+	});
 });

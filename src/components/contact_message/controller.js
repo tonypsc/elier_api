@@ -27,7 +27,6 @@ const controller = {
 
 	async get(req, res) {
 		try {
-			console.log(req.query.search);
 			const result = await service.get(req.query.search);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
