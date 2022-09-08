@@ -37,6 +37,10 @@ const service = {
 
 		return repository.update(list_id, { name });
 	},
+	async delete(list_id) {
+		if (!list_id) throw new CustomError('Invalid input data');
+		return repository.delete(list_id);
+	},
 };
 
 module.exports = service;
