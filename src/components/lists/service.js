@@ -30,6 +30,11 @@ const service = {
 		if (!user_id || !app_id) throw new CustomError('Invalid input data');
 		return repository.getAll({ user_id, app_id }, uiFields);
 	},
+	async update(list_id, name) {
+		if (!list_id) throw new CustomError('Invalid input data');
+		if (!name || name.toString().trim().length === 0)
+			throw new CustomError('List name is required');
+	},
 };
 
 module.exports = service;

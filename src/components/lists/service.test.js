@@ -41,7 +41,19 @@ describe('getAll', () => {
 });
 
 describe('update', () => {
-	test('getAll should throw error on empty user_id or app_id', async () => {
-		await expect(service.getAll()).rejects.toThrow('Invalid input data');
+	test('update should throw error on empty list_id', async () => {
+		await expect(service.update()).rejects.toThrow('Invalid input data');
+	});
+
+	test('update should throw error on empty name', async () => {
+		await expect(service.update('sss')).rejects.toThrow(
+			'List name is required'
+		);
+	});
+
+	test('update should throw error on spaces name', async () => {
+		await expect(service.update('dddd', '   ')).rejects.toThrow(
+			'List name is required'
+		);
 	});
 });
