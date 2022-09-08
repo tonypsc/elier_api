@@ -8,7 +8,9 @@ test('login, empty username or password', async () => {
 });
 
 test('login, user not in db', async () => {
-	await expect(service.login('---', '---')).rejects.toThrow('User not found');
+	await expect(service.login('---', '---', '----')).rejects.toThrow(
+		'User not found'
+	);
 });
 
 test('login, user account disabled', async () => {
