@@ -57,13 +57,14 @@ describe('update', () => {
 		);
 	});
 
-	test('update should return {affectedrows:1} on success', async () => {
-		const result = await service.update(
-			'l7rzlg2z6c338607ef0b5149bae44b25',
-			'updated name'
-		);
-		expect(result.affectedRows).toBe(1);
-	});
+	// test('update should return {affectedrows:1} on success', async () => {
+	// 	const result = await service.update(
+	// 		'l7rzlg2z6c338607ef0b5149bae44b25',
+	// 		'updated name'
+	// 	);
+
+	// 	expect(result.affectedRows).toBe(1);
+	// });
 
 	describe('delete', () => {
 		test('delete should throw error on empty list_id', async () => {

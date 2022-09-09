@@ -21,7 +21,7 @@ const single = (resource, authUser) => {
 };
 
 const multiple = (resources, autUser) => {
-	if (resources instanceof Array) return [];
+	if (!(resources instanceof Array)) return [];
 	return resources.map((res) => single(res, autUser));
 };
 

@@ -133,6 +133,7 @@ const service = {
 			seconds
 		);
 	},
+	addToList(list_id, karaoke_song_id) {},
 };
 
 module.exports = service;
