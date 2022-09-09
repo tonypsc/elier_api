@@ -1,10 +1,7 @@
 const fetch = require('node-fetch');
 const stringSimilarity = require('string-similarity');
 
-const sharedRepository = require('../shared/SharedRepository');
 const config = require('../../config');
-
-const repository = new sharedRepository('karaoke', 'karaoke_id');
 
 const service = {
 	// Calls youtube API to get search results

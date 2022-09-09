@@ -1,7 +1,6 @@
 const CustomError = require('../../error/CustomError');
 
 const sharedRepository = require('../shared/SharedRepository');
-const config = require('../../config');
 
 const repository = new sharedRepository('list', 'list_id');
 
@@ -20,7 +19,7 @@ const service = {
 			list_id: repository.getUUID(),
 			user_id,
 			app_id,
-			name: listName,
+			name: listName.toString(),
 			created_at: new Date().getTime(),
 		};
 
@@ -29,6 +28,17 @@ const service = {
 	async getAll(user_id, app_id) {
 		if (!user_id || !app_id) throw new CustomError('Invalid input data');
 		return repository.getAll({ user_id, app_id }, uiFields);
+	},
+	async update(list_id, name) {
+		if (!list_id) throw new CustomError('Invalid input data');
+		if (!name || name.toString().trim().length === 0)
+			throw new CustomError('List name is required');
+
+		return repository.update(list_id, { name });
+	},
+	async delete(list_id) {
+		if (!list_id) throw new CustomError('Invalid input data');
+		return repository.delete(list_id);
 	},
 };
 

@@ -39,3 +39,35 @@ describe('getAll', () => {
 		expect(result instanceof Array).toBeTruthy();
 	});
 });
+
+describe('update', () => {
+	test('update should throw error on empty list_id', async () => {
+		await expect(service.update()).rejects.toThrow('Invalid input data');
+	});
+
+	test('update should throw error on empty name', async () => {
+		await expect(service.update('sss')).rejects.toThrow(
+			'List name is required'
+		);
+	});
+
+	test('update should throw error on spaces name', async () => {
+		await expect(service.update('dddd', '   ')).rejects.toThrow(
+			'List name is required'
+		);
+	});
+
+	test('update should return {affectedrows:1} on success', async () => {
+		const result = await service.update(
+			'l7rzlg2z6c338607ef0b5149bae44b25',
+			'updated name'
+		);
+		expect(result.affectedRows).toBe(1);
+	});
+
+	describe('delete', () => {
+		test('delete should throw error on empty list_id', async () => {
+			await expect(service.delete()).rejects.toThrow('Invalid input data');
+		});
+	});
+});
