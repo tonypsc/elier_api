@@ -65,10 +65,10 @@ describe('update', () => {
 
 	// 	expect(result.affectedRows).toBe(1);
 	// });
+});
 
-	describe('delete', () => {
-		test('delete should throw error on empty list_id', async () => {
-			await expect(service.delete()).rejects.toThrow('Invalid input data');
-		});
+describe('delete', () => {
+	test('delete should throw error on empty list_id', async () => {
+		await expect(service.delete()).rejects.toThrow('Invalid input data');
 	});
 });
