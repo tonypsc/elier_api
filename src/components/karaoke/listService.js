@@ -1,6 +1,6 @@
 const CustomError = require('../../error/CustomError');
 
-const service = {
+const listService = {
 	async addToList(list_id, karaoke_song_id) {
 		if (!list_id || !karaoke_song_id)
 			throw new CustomError('Invalid input data');
@@ -9,4 +9,4 @@ const service = {
 	},
 };
 
-module.exports = service;
+module.exports = listService;

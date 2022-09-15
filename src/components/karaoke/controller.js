@@ -1,7 +1,8 @@
 const errorHandling = require('../../error/errorHandling');
 
-const service = require('./service');
+//const karaokeService = require('./karaokeService');
 const searchService = require('./searchService');
+const listService = require('./listService');
 
 const controller = {
 	async getKaraokes(req, res) {
@@ -20,7 +21,7 @@ const controller = {
 	async addToList(req, res) {
 		try {
 			const { list_id, karaoke_song_id } = req.body;
-			const result = await service.addToList(list_id, karaoke_song_id);
+			const result = await listService.addToList(list_id, karaoke_song_id);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);
@@ -30,7 +31,7 @@ const controller = {
 	},
 	async addToFavorites(req, res) {
 		try {
-			const result = await service.addToList(req.body.karaoke_song_id);
+			const result = await listService.addToList(req.body.karaoke_song_id);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);

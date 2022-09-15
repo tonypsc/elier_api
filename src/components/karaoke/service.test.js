@@ -1,4 +1,4 @@
-const service = require('./service');
+const service = require('./listService');
 
 describe('delete', () => {
 	test('addToList should throw error on empty list_id', async () => {
