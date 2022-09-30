@@ -10,3 +10,9 @@ describe('addKaraoke', () => {
 		);
 	});
 });
+
+describe('addKaraokes', () => {
+	test('addKaraoke should throw error on empty array', async () => {
+		await expect(service.addToList()).rejects.toThrow('Invalid input data');
+	});
+});
