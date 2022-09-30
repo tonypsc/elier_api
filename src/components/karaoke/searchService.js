@@ -3,7 +3,7 @@ const stringSimilarity = require('string-similarity');
 
 const config = require('../../config');
 
-const service = {
+const searchService = {
 	// Calls youtube API to get search results
 	async getYoutube(search = '', page = 1) {
 		let youtubeSearchUrl =
@@ -135,4 +135,4 @@ const service = {
 	},
 };
 
-module.exports = service;
+module.exports = searchService;
