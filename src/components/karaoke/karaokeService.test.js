@@ -1,18 +1,10 @@
 const service = require('./karaokeService');
 
-describe('addKaraoke', () => {
-	test('addKaraoke should throw error on empty list_id', async () => {
-		await expect(service.addToList()).rejects.toThrow('Invalid input data');
-	});
-	test('addToList should throw error on empty karaoke_song_id', async () => {
-		await expect(service.addToList('list_id')).rejects.toThrow(
-			'Invalid input data'
-		);
-	});
-});
-
 describe('addKaraokes', () => {
+	test('addKaraoke should throw error on undefined input', async () => {
+		await expect(service.addKaraokes()).rejects.toThrow('Invalid input data');
+	});
 	test('addKaraoke should throw error on empty array', async () => {
-		await expect(service.addToList()).rejects.toThrow('Invalid input data');
+		await expect(service.addKaraokes([])).rejects.toThrow('Invalid input data');
 	});
 });
