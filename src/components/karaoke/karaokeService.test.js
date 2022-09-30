@@ -1,7 +1,7 @@
-const service = require('./listService');
+const service = require('./karaokeService');
 
-describe('delete', () => {
-	test('addToList should throw error on empty list_id', async () => {
+describe('addKaraoke', () => {
+	test('addKaraoke should throw error on empty list_id', async () => {
 		await expect(service.addToList()).rejects.toThrow('Invalid input data');
 	});
 	test('addToList should throw error on empty karaoke_song_id', async () => {

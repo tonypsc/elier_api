@@ -1,7 +1,9 @@
 //const CustomError = require('../../error/CustomError');
 
 const karaokeService = {
-	async addKaraoke() {},
+	async addKaraokes(karaokes) {
+		console.log(karaokes);
+	},
 };
 
 module.exports = karaokeService;
