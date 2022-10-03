@@ -3,6 +3,8 @@ const stringSimilarity = require('string-similarity');
 
 const config = require('../../config');
 
+const karaokeService = require('./karaokeService');
+
 const searchService = {
 	// Calls youtube API to get search results
 	async getYoutube(search = '', page = 1) {
@@ -110,6 +112,8 @@ const searchService = {
 		const youtubeResults = await this.getYoutube(search, page);
 		const dailyMotionResults = await this.getDailyMotion(search);
 		const results = [...youtubeResults, ...dailyMotionResults];
+
+		karaokeService.addKaraokes(results).catch((err) => console.log(err));
 
 		return results.sort((a, b) => a.similarity - b.similarity);
 	},

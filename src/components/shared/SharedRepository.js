@@ -185,6 +185,35 @@ class SharedRepository {
 	}
 
 	/**
+	 * Inserts the row
+	 * @param {object} resource
+	 * @returns {promise}
+	 */
+	bulkInsert(resources) {
+		if (!resources || !(resources instanceof Array) || resources.length === 0)
+			return new Promise((reject) => reject('Invalid input data'));
+
+		const fields = Object.keys(resources[0]).join(', ');
+		let valuesPlaceHolder = '';
+		let values = [];
+
+		resources.forEach((resource) => {
+			const resourceValues = Object.values(resource).map((v) =>
+				v === undefined ? null : v
+			);
+			values = [...values, ...resourceValues];
+			valuesPlaceHolder += `(${resourceValues.map(() => '?').join(', ')}),`;
+		});
+
+		valuesPlaceHolder = valuesPlaceHolder.substring(
+			0,
+			valuesPlaceHolder.length - 1
+		);
+		const sql = `INSERT IGNORE INTO ${this.table} (${fields}) VALUES ${valuesPlaceHolder} `;
+		return db.execute(sql, values);
+	}
+
+	/**
 	 * Deletes the row
 	 * @param {string} id
 	 * @returns {promise}
