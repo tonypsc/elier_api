@@ -19,11 +19,11 @@ module.exports = {
 			'/resendconfirmation',
 			'/newmessage',
 			'/userexists',
-			'/search',
+			'/karaoke/search',
 		];
 
 		for (const path of excludedPaths) {
-			if (req.path.includes(path)) {
+			if (req.originalUrl.includes(path)) {
 				next();
 				return;
 			}
