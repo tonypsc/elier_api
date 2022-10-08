@@ -3,6 +3,8 @@ const stringSimilarity = require('string-similarity');
 
 const config = require('../../config');
 
+const karaokeService = require('./karaokeService');
+
 const searchService = {
 	// Calls youtube API to get search results
 	async getYoutube(search = '', page = 1) {
@@ -35,21 +37,19 @@ const searchService = {
 
 			const result = videoData.items.map((res) => {
 				return {
-					id: res.id,
+					karaoke_song_id: res.id,
+					origin: 'youtube',
 					link: `https://www.youtube.com/watch?v=${res.id}`,
-					thumbnail: {
-						small: res.snippet.thumbnails.default.url,
-						medium: res.snippet.thumbnails.medium.url,
-						high: res.snippet.thumbnails.high.url,
-					},
-					published: res.snippet.publishedAt,
 					title: res.snippet.title,
-					language: res.snippet.defaultAudioLanguage,
+					language: res.snippet.defaultAudioLanguage || 'en',
 					duration: this.youtubeDurationToSeconds(res.contentDetails.duration),
 					views: parseInt(res.statistics.viewCount),
 					likes: parseInt(res.statistics.likeCount),
 					comments: parseInt(res.statistics.commentCount),
-					origin: 'youtube',
+					thumbnail_small: res.snippet.thumbnails.default.url,
+					thumbnail_medium: res.snippet.thumbnails.medium.url,
+					thumbnail_high: res.snippet.thumbnails.high.url,
+					//published: res.snippet.publishedAt,
 					similarity: stringSimilarity.compareTwoStrings(
 						res.snippet.title.toLowerCase(),
 						`karaoke ${search.toLowerCase()}`
@@ -76,21 +76,18 @@ const searchService = {
 
 			const result = data.list.map((res) => {
 				return {
-					id: res.id,
+					karaoke_song_id: res.id,
+					origin: 'dailymotion',
 					link: `https://www.dailymotion.com/video${res.id}`,
-					thumbnail: {
-						small: res.thumbnail_120_url,
-						medium: res.thumbnail_360_url,
-						high: res.thumbnail_480_url,
-					},
-					published: undefined,
 					title: res.title,
-					language: res.language,
+					language: res.language || 'en',
 					duration: res.duration,
 					views: res.views_total,
 					likes: res.likes_total,
 					comments: 0,
-					origin: 'dailymotion',
+					thumbnail_small: res.thumbnail_120_url,
+					thumbnail_medium: res.thumbnail_360_url,
+					thumbnail_high: res.thumbnail_480_url,
 					similarity: stringSimilarity.compareTwoStrings(
 						res.title.toLowerCase(),
 						`karaoke ${search.toLowerCase()}`
@@ -110,6 +107,8 @@ const searchService = {
 		const youtubeResults = await this.getYoutube(search, page);
 		const dailyMotionResults = await this.getDailyMotion(search);
 		const results = [...youtubeResults, ...dailyMotionResults];
+
+		karaokeService.addKaraokes(results).catch((err) => console.log(err));
 
 		return results.sort((a, b) => a.similarity - b.similarity);
 	},
