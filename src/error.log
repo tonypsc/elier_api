@@ -742,3 +742,15 @@ Field 'created_at' doesn't have a default value
 Duplicate entry 'adfasdf-karaoke-mia' for key 'list.unique_name'
 						
 ==========================================
+2022-10
+						-12 15
+						:54:50
+youtubeResults.videoList is not iterable
+						
+==========================================
+2022-10
+						-12 15
+						:55:3
+youtubeResults.videoList is not iterable
+						
+==========================================

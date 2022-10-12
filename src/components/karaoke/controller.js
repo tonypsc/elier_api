@@ -9,7 +9,8 @@ const controller = {
 		try {
 			const result = await searchService.getAll(
 				req.query.search,
-				req.query.page
+				req.query.page,
+				req.query.nextPageToken
 			);
 			res.json({ status: 'success', data: result });
 		} catch (error) {

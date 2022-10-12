@@ -7,11 +7,11 @@ const karaokeService = require('./karaokeService');
 
 const searchService = {
 	// Calls youtube API to get search results
-	async getYoutube(search = '', page = 1) {
+	async getYoutube(search = '', page = 1, nextPageToken) {
 		let youtubeSearchUrl =
 			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20';
 
-		if (page !== 1) youtubeSearchUrl += '&pageToken=CBQQAA';
+		if (page !== 1) youtubeSearchUrl += '&pageToken=' + nextPageToken;
 
 		youtubeSearchUrl += '&q="karaoke" ';
 
@@ -25,6 +25,7 @@ const searchService = {
 			const searchData = await searchResponse.json();
 
 			const idList = searchData.items.map((item) => item.id.videoId).join(',');
+			const nextPageToken = searchData.nextPageToken;
 
 			const youtubeVideoUrl =
 				'https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet';
@@ -57,7 +58,7 @@ const searchService = {
 				};
 			});
 
-			return result;
+			return { nextPageToken, videoList: result };
 		} catch (err) {
 			console.log(err);
 			return [];
@@ -101,16 +102,19 @@ const searchService = {
 			return [];
 		}
 	},
-	async getAll(search, page) {
+	async getAll(search, page, nextPageToken) {
 		if (!search) return [];
 
-		const youtubeResults = await this.getYoutube(search, page);
+		const youtubeResults = await this.getYoutube(search, page, nextPageToken);
 		const dailyMotionResults = await this.getDailyMotion(search);
-		const results = [...youtubeResults, ...dailyMotionResults];
+		const results = [...youtubeResults.videoList, ...dailyMotionResults];
 
 		karaokeService.addKaraokes(results).catch((err) => console.log(err));
 
-		return results.sort((a, b) => a.similarity - b.similarity);
+		return {
+			nextPageToken: youtubeResults.nextPageToken,
+			videos: results.sort((a, b) => a.similarity - b.similarity),
+		};
 	},
 
 	// Converts duration from youtube format to seconds
