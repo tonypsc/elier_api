@@ -34,6 +34,7 @@ const searchService = {
 				`${youtubeVideoUrl}&id=${idList}&key=${config.GOOGLE_API_KEY}`
 			);
 
+			// Get video data details
 			const videoData = await videoResponse.json();
 
 			const result = videoData.items.map((res) => {
