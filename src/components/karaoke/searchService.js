@@ -7,7 +7,7 @@ const karaokeService = require('./karaokeService');
 
 const searchService = {
 	// Calls youtube API to get search results
-	async getYoutube(search = '', page = 1, nextPageToken) {
+	async getYoutube(search = '', page = 1, nextPageToken = 'CGQQAA') {
 		let youtubeSearchUrl =
 			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20';
 
@@ -103,6 +103,8 @@ const searchService = {
 			return [];
 		}
 	},
+
+	// Sums, sorts and add results to db
 	async getAll(search, page, nextPageToken) {
 		if (!search) return [];
 
