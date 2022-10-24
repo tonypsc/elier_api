@@ -11,7 +11,8 @@ const searchService = {
 		let youtubeSearchUrl =
 			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20';
 
-		if (page !== '1') youtubeSearchUrl += '&pageToken=' + nextPageToken;
+		if (page !== '1' && nextPageToken)
+			youtubeSearchUrl += '&pageToken=' + nextPageToken;
 
 		youtubeSearchUrl += '&q="karaoke" ';
 
@@ -59,10 +60,10 @@ const searchService = {
 				};
 			});
 
-			return { nextPageToken, videoList: result };
+			return { nextPageToken, videoList: result ?? [] };
 		} catch (err) {
 			console.log(err);
-			return [];
+			return { nextPageToken: 'error', videoList: [] };
 		}
 	},
 
