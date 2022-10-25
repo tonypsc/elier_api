@@ -27,6 +27,7 @@
 		"string-similarity": "^4.0.4"
 	},
 	"devDependencies": {
+		"@types/jest": "^29.2.0",
 		"eslint": "^7.32.0",
 		"eslint-config-airbnb-base": "^14.2.1",
 		"eslint-config-google": "^0.14.0",
