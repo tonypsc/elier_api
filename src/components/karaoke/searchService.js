@@ -81,7 +81,7 @@ const searchService = {
 				return {
 					karaoke_song_id: res.id,
 					origin: 'dailymotion',
-					link: `https://www.dailymotion.com/video${res.id}`,
+					link: `https://www.dailymotion.com/video/${res.id}`,
 					title: res.title,
 					language: res.language || 'en',
 					duration: res.duration,
