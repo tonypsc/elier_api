@@ -7,10 +7,13 @@ const listService = require('./listService');
 const controller = {
 	async getKaraokes(req, res) {
 		try {
+			const { search, page, nextPageToken, perPage } = req.query;
+
 			const result = await searchService.getAll(
-				req.query.search,
-				req.query.page,
-				req.query.nextPageToken
+				search,
+				page,
+				nextPageToken,
+				perPage
 			);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
