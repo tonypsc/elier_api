@@ -5,6 +5,8 @@ const config = require('../../config');
 
 const karaokeService = require('./karaokeService');
 
+const DEFAULT_ASPECT_RATIO = 1.7777777777777777;
+
 const searchService = {
 	// Calls youtube API to get search results
 	async getYoutube(search = '', page = '1', nextPageToken = 'CGQQAA') {
@@ -29,7 +31,7 @@ const searchService = {
 			const nextPageToken = searchData.nextPageToken;
 
 			const youtubeVideoUrl =
-				'https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet';
+				'https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet,player';
 
 			const videoResponse = await fetch(
 				`${youtubeVideoUrl}&id=${idList}&key=${config.GOOGLE_API_KEY}`
@@ -52,6 +54,9 @@ const searchService = {
 					thumbnail_small: res.snippet.thumbnails.default.url,
 					thumbnail_medium: res.snippet.thumbnails.medium.url,
 					thumbnail_high: res.snippet.thumbnails.high.url,
+					definition: res.contentDetails.definition,
+					aspect_ratio: this.getYoutubeAspectRatio(res.player.embedHtml),
+					licensedContent: res.contentDetails.licensedContent,
 					//published: res.snippet.publishedAt,
 					similarity: stringSimilarity.compareTwoStrings(
 						res.snippet.title.toLowerCase(),
@@ -69,7 +74,7 @@ const searchService = {
 
 	// Calls dailyMotion API to get search results
 	async getDailyMotion(search = '', page = 1) {
-		const dailyMotioneUrl = `https://api.dailymotion.com/videos?shorter_than=10&limit=20&page=${page}&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total&search="karaoke" `;
+		const dailyMotioneUrl = `https://api.dailymotion.com/videos?shorter_than=10&limit=20&page=${page}&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total,private,available_formats&search="karaoke" `;
 
 		try {
 			const res = await fetch(
@@ -91,6 +96,9 @@ const searchService = {
 					thumbnail_small: res.thumbnail_120_url,
 					thumbnail_medium: res.thumbnail_360_url,
 					thumbnail_high: res.thumbnail_480_url,
+					definition: res.available_formats[res.available_formats.length - 1],
+					aspect_ratio: res.aspect_ratio ?? DEFAULT_ASPECT_RATIO,
+					licensedContent: res.private,
 					similarity: stringSimilarity.compareTwoStrings(
 						res.title.toLowerCase(),
 						`karaoke ${search.toLowerCase()}`
@@ -139,6 +147,28 @@ const searchService = {
 			(((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
 			seconds
 		);
+	},
+
+	getYoutubeAspectRatio(embedHtml) {
+		if (!embedHtml) return DEFAULT_ASPECT_RATIO;
+
+		const propArray = embedHtml.split(' ');
+
+		const width =
+			propArray
+				.find((item) => item.includes('width='))
+				.split('=')[1]
+				.replace(/"/g, '') ?? 480;
+
+		const height =
+			propArray
+				.find((item) => item.includes('height='))
+				.split('=')[1]
+				.replace(/"/g, '') ?? 270;
+
+		const result = width / height;
+
+		return result || DEFAULT_ASPECT_RATIO;
 	},
 };
 
