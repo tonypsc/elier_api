@@ -9,9 +9,10 @@ const DEFAULT_ASPECT_RATIO = 1.7777777777777777;
 
 const searchService = {
 	// Calls youtube API to get search results
-	async getYoutube(search = '', page = '1', nextPageToken = 'CGQQAA') {
+	async getYoutube(search = '', page = '1', nextPageToken = 'CGQQAA', perPage) {
 		let youtubeSearchUrl =
-			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=20';
+			'https://youtube.googleapis.com/youtube/v3/search?type=video&maxResults=' +
+			perPage;
 
 		if (page !== '1' && nextPageToken)
 			youtubeSearchUrl += '&pageToken=' + nextPageToken;
@@ -73,8 +74,8 @@ const searchService = {
 	},
 
 	// Calls dailyMotion API to get search results
-	async getDailyMotion(search = '', page = 1) {
-		const dailyMotioneUrl = `https://api.dailymotion.com/videos?shorter_than=10&limit=20&page=${page}&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total,private,available_formats&search="karaoke" `;
+	async getDailyMotion(search = '', page = 1, perPage) {
+		const dailyMotioneUrl = `https://api.dailymotion.com/videos?shorter_than=10&limit=${perPage}&page=${page}&fields=id,title,thumbnail_120_url,thumbnail_360_url,thumbnail_480_url,language,duration,views_total,likes_total,private,available_formats&search="karaoke" `;
 
 		try {
 			const res = await fetch(
@@ -114,11 +115,16 @@ const searchService = {
 	},
 
 	// Sums, sorts and add results to db
-	async getAll(search, page, nextPageToken) {
+	async getAll(search, page, nextPageToken, perPage = 20) {
 		if (!search) return [];
 
-		const youtubeResults = await this.getYoutube(search, page, nextPageToken);
-		const dailyMotionResults = await this.getDailyMotion(search);
+		const youtubeResults = await this.getYoutube(
+			search,
+			page,
+			nextPageToken,
+			perPage
+		);
+		const dailyMotionResults = await this.getDailyMotion(search, page, perPage);
 		const results = [...youtubeResults.videoList, ...dailyMotionResults];
 
 		karaokeService.addKaraokes(results).catch((err) => console.log(err));
