@@ -43,7 +43,6 @@ const searchService = {
 			const videoData = await videoResponse.json();
 
 			const result = videoData.items.flatMap((res) => {
-				console.log(res.snippet.title.toLowerCase());
 				if (res.snippet.title.toLowerCase().includes('karaoke')) {
 					return {
 						karaoke_song_id: res.id,
