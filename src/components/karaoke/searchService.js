@@ -28,6 +28,7 @@ const searchService = {
 
 			const searchData = await searchResponse.json();
 
+			// Create videoId list and filter not karaoke ones
 			const idList = searchData.items.map((item) => item.id.videoId).join(',');
 			const nextPageToken = searchData.nextPageToken;
 
@@ -41,29 +42,35 @@ const searchService = {
 			// Get video data details
 			const videoData = await videoResponse.json();
 
-			const result = videoData.items.map((res) => {
-				return {
-					karaoke_song_id: res.id,
-					origin: 'youtube',
-					link: `https://www.youtube.com/watch?v=${res.id}`,
-					title: res.snippet.title,
-					language: res.snippet.defaultAudioLanguage || 'en',
-					duration: this.youtubeDurationToSeconds(res.contentDetails.duration),
-					views: parseInt(res.statistics.viewCount),
-					likes: parseInt(res.statistics.likeCount),
-					comments: parseInt(res.statistics.commentCount),
-					thumbnail_small: res.snippet.thumbnails.default.url,
-					thumbnail_medium: res.snippet.thumbnails.medium.url,
-					thumbnail_high: res.snippet.thumbnails.high.url,
-					definition: res.contentDetails.definition,
-					aspect_ratio: this.getYoutubeAspectRatio(res.player.embedHtml),
-					licensedContent: res.contentDetails.licensedContent,
-					//published: res.snippet.publishedAt,
-					similarity: stringSimilarity.compareTwoStrings(
-						res.snippet.title.toLowerCase(),
-						`karaoke ${search.toLowerCase()}`
-					),
-				};
+			const result = videoData.items.flatMap((res) => {
+				if (res.snippet.title.toLowerCase().includes('karaoke')) {
+					return {
+						karaoke_song_id: res.id,
+						origin: 'youtube',
+						link: `https://www.youtube.com/watch?v=${res.id}`,
+						title: res.snippet.title,
+						language: res.snippet.defaultAudioLanguage || 'en',
+						duration: this.youtubeDurationToSeconds(
+							res.contentDetails.duration
+						),
+						views: parseInt(res.statistics.viewCount),
+						likes: parseInt(res.statistics.likeCount),
+						comments: parseInt(res.statistics.commentCount),
+						thumbnail_small: res.snippet.thumbnails.default.url,
+						thumbnail_medium: res.snippet.thumbnails.medium.url,
+						thumbnail_high: res.snippet.thumbnails.high.url,
+						definition: res.contentDetails.definition,
+						aspect_ratio: this.getYoutubeAspectRatio(res.player.embedHtml),
+						licensedContent: res.contentDetails.licensedContent,
+						//published: res.snippet.publishedAt,
+						similarity: stringSimilarity.compareTwoStrings(
+							res.snippet.title.toLowerCase(),
+							`karaoke ${search.toLowerCase()}`
+						),
+					};
+				} else {
+					return [];
+				}
 			});
 
 			return { nextPageToken, videoList: result ?? [] };
@@ -83,28 +90,32 @@ const searchService = {
 			);
 			const data = await res.json();
 
-			const result = data.list.map((res) => {
-				return {
-					karaoke_song_id: res.id,
-					origin: 'dailymotion',
-					link: `https://www.dailymotion.com/video/${res.id}`,
-					title: res.title,
-					language: res.language || 'en',
-					duration: res.duration,
-					views: res.views_total,
-					likes: res.likes_total,
-					comments: 0,
-					thumbnail_small: res.thumbnail_120_url,
-					thumbnail_medium: res.thumbnail_360_url,
-					thumbnail_high: res.thumbnail_480_url,
-					definition: res.available_formats[res.available_formats.length - 1],
-					aspect_ratio: res.aspect_ratio ?? DEFAULT_ASPECT_RATIO,
-					licensedContent: res.private,
-					similarity: stringSimilarity.compareTwoStrings(
-						res.title.toLowerCase(),
-						`karaoke ${search.toLowerCase()}`
-					),
-				};
+			const result = data.list.flatMap((res) => {
+				if (res.title.toLowerCase().includes('karaoke')) {
+					return {
+						karaoke_song_id: res.id,
+						origin: 'dailymotion',
+						link: `https://www.dailymotion.com/video/${res.id}`,
+						title: res.title,
+						language: res.language || 'en',
+						duration: res.duration,
+						views: res.views_total,
+						likes: res.likes_total,
+						comments: 0,
+						thumbnail_small: res.thumbnail_120_url,
+						thumbnail_medium: res.thumbnail_360_url,
+						thumbnail_high: res.thumbnail_480_url,
+						definition: res.available_formats[res.available_formats.length - 1],
+						aspect_ratio: res.aspect_ratio ?? DEFAULT_ASPECT_RATIO,
+						licensedContent: res.private,
+						similarity: stringSimilarity.compareTwoStrings(
+							res.title.toLowerCase(),
+							`karaoke ${search.toLowerCase()}`
+						),
+					};
+				} else {
+					return [];
+				}
 			});
 
 			return result;
