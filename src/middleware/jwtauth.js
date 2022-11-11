@@ -20,6 +20,7 @@ module.exports = {
 			'/newmessage',
 			'/userexists',
 			'/karaoke/search',
+			'/karaoke/getone',
 		];
 
 		for (const path of excludedPaths) {

@@ -3,6 +3,7 @@ const errorHandling = require('../../error/errorHandling');
 //const karaokeService = require('./karaokeService');
 const searchService = require('./searchService');
 const listService = require('./listService');
+const karaokeService = require('./karaokeService');
 
 const controller = {
 	async getKaraokes(req, res) {
@@ -25,8 +26,7 @@ const controller = {
 	async getKaraoke(req, res) {
 		try {
 			const { id } = req.query;
-
-			const result = await searchService.getOne(id);
+			const result = await karaokeService.getOne(id);
 			res.json({ status: 'success', data: result });
 		} catch (error) {
 			const errors = errorHandling.processError(error);

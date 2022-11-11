@@ -20,6 +20,13 @@ const karaokeService = {
 	async addKaraoke(karaoke) {
 		console.log(karaoke);
 	},
+	// Gets the details of the karaoke song
+	async getOne(id) {
+		if (!id) throw new CustomError('Invalid id');
+		const karaoke = await repository.getById(id.toString());
+		if (!karaoke) throw new CustomError('Karaoke not found');
+		return karaoke;
+	},
 };
 
 module.exports = karaokeService;

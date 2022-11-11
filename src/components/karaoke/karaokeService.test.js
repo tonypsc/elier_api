@@ -13,3 +13,12 @@ describe('addKaraokes', () => {
 		);
 	});
 });
+describe('getOne', () => {
+	test('getOne should throw error on undefined input', async () => {
+		await expect(service.getOne()).rejects.toThrow('Invalid id');
+	});
+
+	test('getOne should return ', async () => {
+		await expect(service.getOne()).rejects.toThrow('Invalid id');
+	});
+});
