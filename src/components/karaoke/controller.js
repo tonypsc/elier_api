@@ -22,6 +22,18 @@ const controller = {
 			res.json({ status: 'error', errors: errors });
 		}
 	},
+	async getKaraoke(req, res) {
+		try {
+			const { id } = req.query;
+
+			const result = await searchService.getOne(id);
+			res.json({ status: 'success', data: result });
+		} catch (error) {
+			const errors = errorHandling.processError(error);
+			res.status(400);
+			res.json({ status: 'error', errors: errors });
+		}
+	},
 	async addToList(req, res) {
 		try {
 			const { list_id, karaoke_song_id } = req.body;
