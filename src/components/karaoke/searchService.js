@@ -33,7 +33,7 @@ const searchService = {
 			const nextPageToken = searchData.nextPageToken;
 
 			const youtubeVideoUrl =
-				'https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet,player';
+				'https://www.googleapis.com/youtube/v3/videos?part=contentDetails,statistics,snippet,player,status';
 
 			const videoResponse = await fetch(
 				`${youtubeVideoUrl}&id=${idList}&key=${config.GOOGLE_API_KEY}`
@@ -63,6 +63,7 @@ const searchService = {
 						aspect_ratio: this.getYoutubeAspectRatio(res.player.embedHtml),
 						licensedContent: res.contentDetails.licensedContent,
 						//published: res.snippet.publishedAt,
+						embeddable: res.status.embeddable,
 						similarity: stringSimilarity.compareTwoStrings(
 							res.snippet.title.toLowerCase(),
 							`karaoke ${search.toLowerCase()}`
@@ -75,7 +76,6 @@ const searchService = {
 
 			return { nextPageToken, videoList: result ?? [] };
 		} catch (err) {
-			console.log(err);
 			return { nextPageToken: 'error', videoList: [] };
 		}
 	},
@@ -108,6 +108,7 @@ const searchService = {
 						definition: res.available_formats[res.available_formats.length - 1],
 						aspect_ratio: res.aspect_ratio ?? DEFAULT_ASPECT_RATIO,
 						licensedContent: res.private,
+						embeddable: true,
 						similarity: stringSimilarity.compareTwoStrings(
 							res.title.toLowerCase(),
 							`karaoke ${search.toLowerCase()}`
@@ -120,7 +121,6 @@ const searchService = {
 
 			return result;
 		} catch (err) {
-			console.log(err);
 			return [];
 		}
 	},
